@@ -1,0 +1,15 @@
+{
+  "name": "玉島LC Cal",
+  "short_name": "TamaLC Cal",
+  "icons": [
+    {
+      "src": "lionicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}

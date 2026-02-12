@@ -1,0 +1,1218 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>玉島LCカレンダー</title>
+<meta name="apple-mobile-web-app-title" content="玉島LCカレンダー">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+body {
+  background-color: #f7f4f0;
+  font-family: sans-serif;
+  padding: 8px;
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+/* 月ナビゲーション */
+.month-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-size: 26px;
+  margin-bottom: 4px;
+  padding: 2px 0;
+  line-height: 1;
+}  /* ← この閉じカッコが必要 */
+
+
+/* ≪ ≫ のボタン（誤タップ防止のため広め） */
+.nav-btn {
+  cursor: pointer;
+  padding: 0 18px; /* ← 誤タップ防止のキモ */
+  color: #6aa84f;  /* ← 2月や玉島ライオンズと同じ緑 */
+  font-weight: bold;
+  user-select: none;
+}
+
+/* 月（中央） */
+.current-month {
+  font-weight: bold;
+  margin: 0 20px; /* ← 月と ≪≫ の間に余白 */
+  color: #5E913B;
+}
+
+/* 年（右端） */
+.year-text {
+  font-size: 20px;
+  color: #5E913B; /* ← 深い緑 */
+  font-weight: bold;
+}
+
+.month-nav {
+  display: flex;
+  justify-content: space-between; /* 左・中央・右に配置 */
+  align-items: center;
+  position: relative;
+}
+
+.current-month {
+  flex: 1;
+  text-align: center; /* 月を中央に固定 */
+  font-weight: bold;
+  padding: 0 12px;
+}
+
+
+.year-text {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  margin: 0 auto;
+}
+
+/* 曜日ヘッダー */
+th {
+  border: 1px solid #ccc;
+  background: #E2EFDA;
+  font-weight: bold;
+  text-align: center;
+  height: 35px;
+  line-height: 35px;
+  font-size: 16px;
+}
+
+
+/* 日付セル */
+/*
+  ▼ 2026/02/10 修正①
+     理由：スマホ画面でテーブルが横にはみ出し、
+           右端に細い縦バーが出る問題を解消するため。
+           padding の左右を 4px → 2px に縮小して横幅を収めた。
+
+  ▼ 2026/02/10 修正②
+     理由：PC 表示では height:110px が必須のため残す。
+           しかしスマホでは高さが足りず、縦スクロールバーが出るため、
+           スマホ幅のときだけ高さを auto にして自然な縦長にする。
+*/
+/* ▼ 2026/02/10 22:45 修正
+   理由：td の中に td.sunday / td.holiday / td.saturday が入り込み、
+         ここから下の CSS がすべて無効化されていたため。
+         スマホ高さ・タイトル中央・色指定・ログイン位置など
+         全 UI 崩れの原因になっていた。
+*/
+
+td {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 4px 2px;
+  vertical-align: top;
+  height: 110px;        /* ← PC 用に残す */
+  font-size: 14px;
+}  /* ← ★ 本来ここで閉じる必要があった */
+
+/* 日曜・祝日（背景ピンク＋赤文字） */
+td.sunday {
+  background: #FFF3FF;
+  color: red;
+}
+td.holiday {
+  background: #FFF3FF;  /* 日曜と同じでもOK */
+  color: red;
+}
+
+/* 土曜（背景水色＋青文字） */
+td.saturday {
+  background: #E6FDFE;
+  color: blue;
+}
+
+
+/* 日付部分 */
+.day-number {
+  font-weight: bold;
+  margin-bottom: 2px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* 共通イベント枠 */
+.event {
+  margin: 2px 0;
+  padding: 2px 3px;
+  font-size: 13px;
+  cursor: pointer;
+  word-break: break-all;
+
+  /* 1行に固定 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* カプセル型 */
+  border-radius: 9999px;
+
+  /* 中央揃え */
+  text-align: center;
+}
+
+/* カテゴリ別カラー（左線なし・背景色のみ） */
+.event.rijikai   { background: #E8F4FF; }
+.event.reikai    { background: #FFE8E8; }
+.event.goyakukai { background: #E8FBE8; }
+.event.act       { background: #FFF9E0; }
+.event.kaigi     { background: #F3E8FF; }
+.event.taeve     { background: #E5F5EC; }
+.event.sonota    { background: #FFE8F5; }
+
+/*：業務連絡（背景色のみ） */
+.event.gyomurenraku {
+  background: #D0CECE;
+}
+
+
+/* ポップアップ外枠（透明） */
+#popup {
+  display: none;
+  border-radius: 12px !important;
+  position: fixed;
+  top: 10% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 90% !important;        /* ← スマホで自然に縮む */
+  max-width: 380px !important;  /* ← 理想の幅 */
+  padding: 0 !important;
+  border: 2px solid #666 !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important;
+  background: transparent !important;
+  z-index: 9999 !important;
+}
+
+/* 中身：白の半透明（90%）＋角丸 */
+#popupContent {
+  background: rgba(255,255,255,0.92) !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important;
+  color: #111 !important;
+  line-height: 1.6 !important;
+  font-size: 18px !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* 閉じるボタン */
+#loginClose, #popupClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+
+/* メモ欄の折り返し */
+#popupContent .memo {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* モバイル調整 */
+@media (max-width: 480px) {
+  #popup { 
+    top: 6% !important;
+  }
+  #popupContent { 
+    padding: 16px !important; 
+    font-size: 20px !important; 
+  }
+}
+
+/* ここからは @media の外に置くべき通常CSS（位置だけ修正） */
+#popupClose {
+  float: right;
+  cursor: pointer;
+  font-size: 20px;      /* ← ✕を20pxに */
+  line-height: 1;       /* ← 上下の余白を消す */
+  margin-top: -6px;     /* ← 丸の中央に揃うよう微調整 */
+}
+
+
+#popup h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+
+    /* 新規予定入力フォーム（オーバーレイ） */
+    #formOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: transparent;   /* ← グレー廃止 */
+  display: none;
+  z-index: 9998;
+}
+    #formBox {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.8);
+      padding: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      font-size: 14px;
+    }
+    #formBox h3 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+    #formBox label {
+      display: block;
+      margin-top: 6px;
+    }
+    #formBox input, #formBox select, #formBox textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+  padding: 4px;
+  margin-top: 2px;
+  background: rgba(255, 255, 255, 0.8);  /* ← ここだけ追加 */
+    }
+    #formButtons {
+      text-align: right;
+      margin-top: 8px;
+    }
+#formButtons button {
+      margin-left: 6px;
+      padding: 4px 10px;
+      font-size: 14px;
+}
+
+.year-line {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 2px 0;
+}
+.calendar-title {
+  color: #5E913B;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* ▼▼▼ ログイン画面のCSSをここに追加 ▼▼▼ */
+#loginOverlay {
+  /*
+    ▼ 2026/02/10 13:01 修正
+       display: none !important; を削除
+       理由：ログイン画面が JS で表示されなくなり、
+             スマホ表示で謎の縦バーだけが残る原因になっていたため。
+       備考：初期状態は display:none のままで問題ない。
+  */
+  display: none;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#loginBox {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  position: relative;
+
+  /*
+    ▼ 2026/02/10 13:01 追加
+       内容：z-index: 10001;
+       理由：スマホ表示で loginOverlay（黒背景）が前面に来てしまい、
+             ログインボックスが背面に隠れて見えなくなる問題を解決。
+       備考：背景より前に出すための調整。
+  */
+  z-index: 10001;
+}
+
+#loginBox label {
+  display: block;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+#loginBox input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+#loginBtn {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+}
+/* ▲▲▲ ログイン画面のCSSここまで ▲▲▲ */
+
+
+/* ▼▼▼ カレンダー右下のログインリンク ▼▼▼ */
+.login-link {
+  /*
+    ▼ 2026/02/10 13:01 修正
+       position: fixed; を追加
+       理由：右下固定が効かず、左下に飛んでしまう現象を修正。
+  */
+  position: fixed;
+
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #6aa84f;
+  cursor: pointer;
+  padding: 3px 6px;
+  user-select: none;
+}
+/* ▲▲▲ カレンダー右下のログインリンクここまで ▲▲▲ */
+
+
+/* ▼▼▼ スマホ専用カレンダー調整 ▼▼▼ */
+@media (max-width: 600px) {
+
+  /* ▼ 2026/02/10 15:58 再修正
+     理由：下記の修正（padding:2px 6px / vertical-align / height:auto）が
+           タイトル位置・色、ログイン位置・色、✕表示など
+           他UIを巻き込んでレイアウト崩れを起こしたため、
+           13:58 時点の正常状態（padding:6px のみ）に戻す。
+  */
+
+  /* ▼ あなたが貼った元の修正ブロック（そのまま残す） ▼
+     ▼ 2026/02/10 15:00 修正
+         理由：スマホで日付セルが縦に詰まりすぎていたため、
+               padding:6px を上下2px・左右6pxに変更し、高さだけを調整。
+               既存のフォント指定や他UIには触らない。
+  */
+  /*
+  td {
+    padding: 2px 6px;
+    font-size: 16px;
+    vertical-align: top;
+    height: auto !important;
+  }
+  */
+
+  /* ▼ 2026/02/10 15:05 修正
+     理由：あとから勝手に追加してしまった
+           .day-number と .event のセレクタを完全削除。
+           不要な定義を残さず、元の構造だけを維持するため。
+  */
+
+  /* ▼ 2026/02/10 20:35 スマホ崩れ対策
+     理由：PC側の td padding がスマホに適用され、
+           高さ・位置・色など複数の崩れを引き起こしていたため、
+           スマホ時のみ td の padding を無効化して連鎖崩れを止める。
+  */
+  td {
+    padding: 0;
+  }
+
+}
+/* ▲▲▲ スマホ専用カレンダー調整ここまで ▲▲▲ */
+
+/* ▼▼▼ 閲覧者ポップアップ：最終上書き ▼▼▼ */
+#popupContent .infoText {
+  font-size: 20px !important;
+  line-height: 1.6 !important;
+}
+
+#popupContent .memoText {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+
+  /* ▼ 折り返し指定（幅固定で下に伸びる） ▼ */
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+/* ▲▲▲ 閲覧者ポップアップ：最終上書き ▲▲▲ */
+
+
+</style>
+
+
+</head>
+
+<body>
+
+<!-- ▼▼▼ ログイン画面（完全版） ▼▼▼ -->
+<div id="loginOverlay">
+  <div id="loginBox">
+
+    <!-- ★ ここが追加した ✕ ボタン（パターンA） -->
+    <span id="loginClose" style="
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #555;
+    ">✖</span>
+
+    <h2>ログイン</h2>
+
+    <label>ID
+      <input type="text" id="loginId">
+    </label>
+
+    <label>パスワード
+      <input type="password" id="loginPw">
+    </label>
+
+    <button id="loginButton">ログイン</button>
+
+  </div>
+</div>
+
+<button id="logoutBtn" style="
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 8px 12px;
+  background: #c93a40;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: none;
+  z-index: 9000;
+">ログアウト</button>
+<!-- ▲▲▲ ログイン画面（完全版）ここまで ▲▲▲ -->
+
+<!-- 月ナビゲーション -->
+<div class="month-nav">
+  <span class="nav-btn prev" onclick="moveMonth(-1)">≪</span>
+  <span class="current-month" id="currentMonth"></span>
+  <span class="nav-btn next" onclick="moveMonth(1)">≫</span>
+</div>
+
+<!-- カレンダーのタイトル行（ログイン画面では非表示になる） -->
+<div class="year-line">
+  <span class="year-text" id="yearText"></span>
+  <span class="calendar-title">玉島ライオンズクラブカレンダー</span>
+</div>
+
+
+  <!-- カレンダー本体 -->
+  <div id="calendar"></div>
+
+  <!-- イベント詳細ポップアップ -->
+  <div id="popup">
+    <span id="popupClose">✖</span>
+    <div id="popupContent"></div>
+  </div>
+
+<!-- 新規予定入力フォーム -->
+<div id="formOverlay">
+  <div id="formBox">
+    <h3 id="formTitle"></h3>
+
+    <label>日付
+      <input type="date" id="formDate">
+    </label>
+
+    <label>開始時間（例: 10:00）
+      <input type="text" id="formStart">
+    </label>
+    <label>終了時間（例: 11:30）
+      <input type="text" id="formEnd">
+    </label>
+    <label>カテゴリ
+      <select id="formCategory">
+  <option value="理事会">理事会</option>
+  <option value="例会">例会</option>
+  <option value="五役会">五役会</option>
+  <option value="アクト">アクト</option>
+  <option value="会議">会議</option>
+  <option value="委員会">委員会</option>
+  <option value="他イベント">他イベント</option>
+  <option value="その他">その他</option>
+  <option value="業務連絡">業務連絡</option>
+</select>
+    </label>
+    <label>タイトル
+      <input type="text" id="formTitleInput">
+    </label>
+    
+<!-- ★ ここに追加する！ -->
+<label>場所
+  <input type="text" id="formPlace">
+</label>
+
+<label>参加者
+  <input type="text" id="formParticipants">
+</label>
+<label>メモ（URLもそのまま記入OK）
+  <textarea id="formMemo" rows="8"></textarea>
+</label>
+<!-- ★ ここまで -->
+
+<div id="formButtons">
+  <button type="button" id="formClose">閉じる</button>
+  <button type="button" id="formDelete">削除</button>
+  <button type="button" id="formSubmit">登録</button>
+</div>
+
+  </div>
+</div>
+
+<script>
+function isLoggedIn() {
+  return localStorage.getItem("loggedIn") === "true";
+}
+
+const holidays = JSON.parse(<?= holidays ?>);
+
+let year = <?= year ?>;
+let month = <?= month ?>;   // ← +1 を消して元に戻す
+
+// ★★★ ここに getColor を入れる ★★★
+function getColor(category) {
+  const colors = {
+    "理事会":      { bg: "#0074bf", text: "#ffffff" },
+    "例会":        { bg: "#c93a40", text: "#ffffff" },
+    "五役会":      { bg: "#56a764", text: "#ffffff" },
+    "アクト":      { bg: "#d16b16", text: "#ffffff" },
+    "会議":        { bg: "#9460a0", text: "#ffffff" },
+    "委員会":      { bg: "#f2cf01", text: "#000000" },
+    "他イベント":  { bg: "#65ace4", text: "#ffffff" },
+    "その他":      { bg: "#cc528b", text: "#ffffff" },
+    "業務連絡":    { bg: "#D0CECE", text: "#000000" }
+  };
+
+  return colors[category] || { bg: "#999999", text: "#000000" };
+}
+
+
+// ★★★ ここまで ★★★
+
+
+function moveMonth(diff) {
+  month = Number(month);
+  year = Number(year);
+
+  let newMonth = month + diff;
+  let newYear = year;
+
+  if (newMonth < 1) {
+    newMonth = 12;
+    newYear--;
+  } else if (newMonth > 12) {
+    newMonth = 1;
+    newYear++;
+  }
+
+  year = newYear;
+  month = newMonth;
+
+  // 表示更新
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+  // ★★★ 祝日 → イベント の順で再取得してカレンダー更新 ★★★
+  google.script.run
+    .withSuccessHandler(newHolidays => {
+
+      // holidays を新しい月の祝日で更新
+      holidays.length = 0;
+      newHolidays.forEach(h => holidays.push(h));
+    })
+    .getHolidays(year, month);   // ← 正しい位置
+
+  // 次にイベントを取得してカレンダー描画
+  google.script.run
+    .withSuccessHandler(events => {
+      buildCalendar(events);
+      document.getElementById("currentMonth").innerText = `${month}月`;
+      document.getElementById("yearText").innerText = `${year}年`;
+    })
+    .getEvents(year, month);
+}
+
+    function getCategoryClass(category) {
+  switch (category) {
+    case '理事会': return 'rijikai';
+    case '例会': return 'reikai';
+    case '五役会': return 'goyakukai';
+    case 'アクト': return 'act';
+    case '会議': return 'kaigi';
+    case '委員会': return 'iinkai';
+    case '他イベント': return 'taeve';
+    case 'その他': return 'sonota';
+
+    // 業務連絡
+    case '業務連絡': return 'gyomurenraku';
+
+    default: return '';
+  }
+}
+
+
+    function linkify(text) {
+      if (!text) return '';
+      const urlPattern = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+    }
+
+    function buildCalendar(events) {
+  let eventQueue = [];   // ← この1行だけ追加
+  const first = new Date(year, month - 1, 1);
+  const last = new Date(year, month, 0);
+
+  let html = "<table>";
+  html += `
+    <tr>
+      <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+    </tr>
+  `;
+
+  let day = 1;
+  let w = first.getDay();
+
+  html += "<tr>";
+
+  for (let i = 0; i < w; i++) html += "<td></td>";
+
+  // ★ イベントを後で追加するための一時保存
+
+  while (day <= last.getDate()) {
+  const d = new Date(year, month - 1, day);
+  const wd = d.getDay();
+  const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  const ymd = dateStr;
+
+  let cls = "";
+  if (wd === 0) cls = "sunday";
+  if (wd === 6) cls = "saturday";
+  if (!ymd.endsWith("-02-03") && holidays.includes(ymd.slice(5))) cls = "holiday";
+
+  // ★ data-date を付ける（重要）
+  html += `<td class="${cls}" data-date="${dateStr}">`;
+
+  // 日付クリック
+ html += `<div class="day-number" onclick='if (localStorage.getItem("loggedIn") === "true") openForm("${ymd}", ${day})'>${day}</div>`;
+
+  // 今日のイベント
+  const todays = events.filter(ev => ev.date === dateStr);
+  todays.sort((a, b) => a.start.localeCompare(b.start));
+
+  // ★ ここでは DOM を作らず、後で追加するために eventQueue に保存
+  todays.forEach(ev => {
+    eventQueue.push({ ev, ymd, dateStr });
+  });
+
+  html += "</td>";
+
+  // ★ ★ ★ ここを修正（テーブル崩壊防止）
+  if (wd === 6) {
+    html += "</tr>";
+    if (day !== last.getDate()) {
+      html += "<tr>";
+    }
+  }
+
+  day++;
+}
+
+  html += "</tr></table>";
+
+ // ★ まずカレンダーを描画
+  document.getElementById("calendar").innerHTML = html;
+ 
+  // ★ 描画後にイベントバーを DOM として追加
+  eventQueue.forEach(({ ev, ymd, dateStr }) => {
+    const color = getColor(ev.category);
+    const safeTitle = (ev.title || '').replace(/'/g, "&#39;");
+
+    const eventObj = {
+      date: ev.date,
+      start: ev.start,
+      end: ev.end,
+      category: ev.category,
+      title: ev.title || "",
+      memo: ev.memo || "",
+      place: ev.place || "",
+      participants: ev.participants || "",
+      rowIndex: ev.rowIndex
+    };
+
+// ★ イベントバーを DOM で作成
+const div = document.createElement("div");
+div.className = "event";
+div.style.backgroundColor = color.bg;
+div.style.color = color.text;
+div.textContent = safeTitle;
+
+// ★ 編集者と閲覧者でクリック動作を分ける
+div.onclick = () => {
+  if (isLoggedIn()) {
+    // 編集者 → 編集フォームを開く
+    openForm(ymd, null, eventObj);
+  } else {
+    // 閲覧者 → 閲覧ポップアップを開く
+    openViewPopup(eventObj);
+  }
+};
+
+
+    // ★ 対応する td を取得
+    const cell = document.querySelector(`td[data-date="${dateStr}"]`);
+    if (cell) {
+      cell.appendChild(div);
+
+    }
+  });
+}
+
+
+function showPopup(title, start, end, place, memo, participants) {
+  let timeText = "";
+  if (start && end) {
+    timeText = `<p class="infoText">${start}〜${end}</p>`;
+  }
+
+  let placeText = "";
+  if (place) {
+    placeText = `<p class="infoText"><strong>場所：</strong>${place}</p>`;
+  }
+
+  let participantsText = "";
+  if (participants) {
+    const list = participants.split(/\s+/);
+    participantsText = `
+      <p class="infoText"><strong>対象者：</strong></p>
+      <div class="participants-line">
+        ${list.map(p => `<div class="participant-item">${p}</div>`).join("")}
+      </div>
+    `;
+  }
+
+  let memoText = "";
+  if (memo) {
+    memoText = `
+      <p class="memoText"><strong>メモ：</strong><br>${linkify(memo)}</p>
+    `;
+  }
+
+  // ★★★ ここに content を戻す ★★★
+  const content = `
+    <h3>${title}</h3>
+    ${timeText}
+    ${placeText}
+    ${participantsText}
+    ${memoText}
+  `;
+
+  document.getElementById("popupContent").innerHTML = content;
+  document.getElementById("popup").style.display = "block";
+}
+
+document.getElementById("popupClose").onclick = () => {
+  document.getElementById("popup").style.display = "none";
+};
+
+document.getElementById("formClose").onclick = () => {
+  closeForm();   // ★ ここが今回追加する1行
+};
+
+let currentFormDate = null;
+let currentEditRow = null;
+
+
+function openForm(dateStr, day, eventData = null) {
+  document.getElementById("popup").style.display = "none";
+
+  currentFormDate = dateStr;
+
+  // ★ 新規でも編集でも必ず日付をセットする
+  document.getElementById("formDate").value = dateStr;
+
+  document.getElementById("formTitle").innerText =
+    eventData ? `${dateStr} の予定を編集` : `${dateStr} の予定を追加`;
+
+  if (eventData) {
+    // ★ 編集モード
+    document.getElementById("formStart").value = eventData.start;
+    document.getElementById("formEnd").value = eventData.end;
+    document.getElementById("formCategory").value = eventData.category;
+    document.getElementById("formTitleInput").value = eventData.title;
+    document.getElementById("formMemo").value = eventData.memo;
+    document.getElementById("formPlace").value = eventData.place || "";
+    document.getElementById("formParticipants").value = eventData.participants || "";
+
+    currentEditRow = eventData.rowIndex;
+
+  } else {
+
+    // ★ 新規モード
+    document.getElementById("formStart").value = "";
+    document.getElementById("formEnd").value = "";
+    document.getElementById("formCategory").value = "その他";
+    document.getElementById("formTitleInput").value = "";
+    document.getElementById("formMemo").value = "";
+    document.getElementById("formPlace").value = "";
+    document.getElementById("formParticipants").value = "";
+
+    document.getElementById("formSubmit").style.display = "inline-block";
+
+    currentEditRow = null;
+  }
+
+ // ★ フォーム表示
+document.getElementById("formOverlay").style.display = "block";
+}
+
+function closeForm() {
+  document.getElementById("formOverlay").style.display = "none";
+}
+
+document.getElementById("formSubmit").onclick = () => {
+
+  document.getElementById("formSubmit").disabled = true;
+
+  const date = document.getElementById("formDate").value;
+  const start = document.getElementById("formStart").value.trim();
+  const end = document.getElementById("formEnd").value.trim();
+  const category = document.getElementById("formCategory").value;
+  const title = document.getElementById("formTitleInput").value.trim();
+  const memo = document.getElementById("formMemo").value.trim();
+  const place = document.getElementById("formPlace").value.trim();
+  const participants = document.getElementById("formParticipants").value.trim();
+
+  if (!date || !title) {
+    alert("日付とタイトルは必須です。");
+    document.getElementById("formSubmit").disabled = false;
+    return;
+  }
+
+  // ★★★ 編集モードかどうかで分岐 ★★★
+  if (currentEditRow !== null) {
+
+    // ★ 編集モード → updateEvent を呼ぶ
+    google.script.run
+      .withSuccessHandler(() => {
+        document.getElementById("formSubmit").disabled = false;
+        closeForm();
+
+        google.script.run
+          .withSuccessHandler(events => {
+            buildCalendar(events);
+            document.getElementById("currentMonth").innerText = `${month}月`;
+            document.getElementById("yearText").innerText = `${year}年`;
+          })
+          .getEvents(year, month);
+      })
+      .withFailureHandler(err => {
+        alert("更新に失敗しました。");
+        console.log(err);
+        document.getElementById("formSubmit").disabled = false;
+      })
+      .updateEvent(currentEditRow, date, start, end, category, title, memo, place, participants);
+
+    return;
+  }
+
+  // ★ 新規追加モード（今までの処理）
+  google.script.run
+    .withSuccessHandler(() => {
+      document.getElementById("formSubmit").disabled = false;
+      closeForm();
+
+      google.script.run
+        .withSuccessHandler(events => {
+          buildCalendar(events);
+          document.getElementById("currentMonth").innerText = `${month}月`;
+          document.getElementById("yearText").innerText = `${year}年`;
+        })
+        .getEvents(year, month);
+    })
+    .withFailureHandler(err => {
+      alert("登録に失敗しました。");
+      console.log(err);
+    })
+    .addEvent(date, start, end, category, title, memo, place, participants);
+
+  return;
+};
+
+window.onload = function() {
+  google.script.run
+    .withSuccessHandler(events => {
+      buildCalendar(events);
+      document.getElementById("currentMonth").innerText = `${month}月`;
+      document.getElementById("yearText").innerText = `${year}年`;
+    })
+    .getEvents(year, month);
+};
+
+// ★★★ ここから追加する ★★★
+
+document.getElementById("formDelete").onclick = () => {
+  if (currentEditRow !== null) {
+
+    // ★ 削除ボタンを一時的に無効化（連打防止）
+    document.getElementById("formDelete").disabled = true;
+
+    google.script.run
+      .withSuccessHandler(() => {
+        closeForm();
+
+        google.script.run
+          .withSuccessHandler(events => {
+            buildCalendar(events);
+            document.getElementById("currentMonth").innerText = `${month}月`;
+            document.getElementById("yearText").innerText = `${year}年`;
+          })
+          .getEvents(year, month);
+
+        // ★ 削除ボタンを再度有効化
+        document.getElementById("formDelete").disabled = false;
+      })
+      .withFailureHandler(err => {
+        alert("削除に失敗しました。");
+        console.log(err);
+
+        // ★ エラー時も削除ボタンを戻す
+        document.getElementById("formDelete").disabled = false;
+      })
+      .deleteEvent(currentEditRow);
+  }
+};
+            // ★ カレンダー更新後に削除ボタンを再び有効化
+document.getElementById("formDelete").onclick = () => {
+  if (currentEditRow !== null) {
+
+    document.getElementById("formDelete").disabled = true;
+
+    google.script.run
+      .withSuccessHandler(() => {
+        closeForm();
+
+        google.script.run
+          .withSuccessHandler(events => {
+            buildCalendar(events);
+            document.getElementById("formDelete").disabled = false;
+          })
+          .getEvents(year, month);
+      })
+      .deleteEvent(currentEditRow);
+  }
+};
+// ▼▼▼ ログイン処理をここに追加 ▼▼▼
+document.getElementById("loginButton").addEventListener("click", function () {
+  const id = document.getElementById("loginId").value;
+  const pw = document.getElementById("loginPw").value;
+
+  // ▼▼▼ ログイン成功時の処理 ▼▼▼
+  if (id === "tamal" && pw === "tamal1956") {
+
+    localStorage.setItem("loggedIn", "true");
+    document.getElementById("logoutBtn").style.display = "block";
+    document.getElementById("loginOverlay").style.display = "none";
+
+    // ★ 追加するのはこの1行だけ（余計な閉じは付けない）
+  
+    google.script.run
+      .withSuccessHandler(events => {
+        buildCalendar(events);
+        document.getElementById("currentMonth").innerText = `${month}月`;
+        document.getElementById("yearText").innerText = `${year}年`;
+      })
+      .getEvents(year, month);
+
+    return;
+  }
+  // ▲▲▲ ログイン成功時の処理ここまで ▲▲▲
+
+  // ログイン失敗
+  alert("ID または パスワードが違います");
+});  // ← ここで本当に終わり
+// ▲▲▲ ログイン処理ここまで ▲▲▲
+
+
+// ★★★ ログイン画面の ✕ を押したら閉じる ★★★
+document.getElementById("loginClose").addEventListener("click", function () {
+  document.getElementById("loginOverlay").style.display = "none";
+});
+
+
+/* ▼▼▼ ページ読み込み時の自動ログイン ▼▼▼ */
+window.addEventListener("load", function () {
+  const saved = localStorage.getItem("loggedIn");
+
+  if (saved === "true") {
+    // 自動ログイン
+    document.getElementById("loginOverlay").style.display = "none";
+
+    // ★ ③：ログアウトボタンを表示する
+    document.getElementById("logoutBtn").style.display = "block";
+  }
+
+  // ★ 閲覧者（saved が null）はログイン画面を出さない
+  if (saved === null) {
+    document.getElementById("loginOverlay").style.display = "none";
+  }
+});
+/* ▲▲▲ 自動ログインここまで ▲▲▲ */
+
+// ▼▼▼ ログアウト処理 ▼▼▼
+document.getElementById("logoutBtn").addEventListener("click", function () {
+  // 保存されたログイン状態を削除
+  localStorage.removeItem("loggedIn");
+
+  // ログイン画面を再表示
+  document.getElementById("loginOverlay").style.display = "flex";  // ← ここだけ修正
+
+  // ログアウトボタンを隠す
+  document.getElementById("logoutBtn").style.display = "none";
+
+  // ログアウトしたら編集UIを隠す
+  hideEditorUI();
+});
+// ▲▲▲ ログアウト処理ここまで ▲▲▲
+
+
+// ▼▼▼ カレンダー右下ログインリンクの処理 ▼▼▼
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("loginLink").addEventListener("click", function () {
+    document.getElementById("loginOverlay").style.display = "flex";  // ← 修正
+  });
+});
+// ▲▲▲ カレンダー右下ログインリンクの処理ここまで ▲▲▲
+
+
+// ▼▼▼ 閲覧者用：編集UIを全部隠す ▼▼▼
+function hideEditorUI() {
+  // 編集フォームを隠す
+  const formOverlay = document.getElementById("formOverlay");
+  if (formOverlay) formOverlay.style.display = "none";
+
+  // 予定追加ボタン（存在する場合）
+  const addBtn = document.getElementById("addEventBtn");
+  if (addBtn) addBtn.style.display = "none";
+
+  // 編集ボタン（存在する場合）
+  document.querySelectorAll(".edit-btn").forEach(btn => btn.style.display = "none");
+
+  // 削除ボタン（存在する場合）
+  document.querySelectorAll(".delete-btn").forEach(btn => btn.style.display = "none");
+}
+// ▲▲▲ 閲覧者用：編集UIを全部隠す ▲▲▲
+
+
+// ▼▼▼ 編集者用：編集UIを表示する ▼▼▼
+function showEditorUI() {
+  const addBtn = document.getElementById("addEventBtn");
+  if (addBtn) addBtn.style.display = "block";
+
+  document.querySelectorAll(".edit-btn").forEach(btn => btn.style.display = "inline-block");
+  document.querySelectorAll(".delete-btn").forEach(btn => btn.style.display = "inline-block");
+}
+// ▲▲▲ 編集者用：編集UIを表示する ▲▲▲
+
+
+// ▼▼▼ ページ読み込み時にログイン状態でUI切り替え ▼▼▼
+document.addEventListener("DOMContentLoaded", function () {
+  if (isLoggedIn()) {
+    showEditorUI();
+  } else {
+    hideEditorUI();
+  }
+});
+// ▲▲▲ ページ読み込み時にログイン状態でUI切り替え ▲▲▲
+
+
+// ------------------------------------------------------------
+// 【修正メモ】2026/02/11
+// 閲覧者ポップアップでカテゴリ色が反映されない問題を修正。
+// 理由：colors を閲覧者側で二重定義すると衝突する構造のため、
+//       管理者側で定義済みの getColor() を参照する方式に統一。
+//       openViewPopup 内では colors を再定義しない。
+// ------------------------------------------------------------
+
+// ▼▼▼ 閲覧者用：イベント内容を表示するポップアップ ▼▼▼
+function openViewPopup(eventObj) {
+  const popup = document.getElementById("popup");
+  const content = document.getElementById("popupContent");
+
+  // ★ 管理者側にある getColor() をそのまま使う（重複定義なし）
+  const color = getColor(eventObj.category);
+
+  // 内容を表示（帯＋本文）
+  content.innerHTML = `
+    <div class="memoHeader" style="
+      background:${color.bg};
+      color:${color.text};
+      margin: -20px -20px 0 -20px;
+      padding:12px 10px;
+      text-align:center;
+    ">
+      <div class="memoDate" style="font-size:20px; font-weight:bold; margin-bottom:4px;">
+        ${eventObj.date}
+      </div>
+      <div class="memoTitle" style="font-size:20px; font-weight:bold;">
+        ${eventObj.title}
+      </div>
+    </div>
+
+    <div class="memoBody" style="padding:12px;">
+      <p><strong>時間:</strong> ${eventObj.start} ～ ${eventObj.end}</p>
+      <p><strong>場所:</strong> ${eventObj.place || ""}</p>
+      <p><strong>参加者:</strong> ${eventObj.participants || ""}</p>
+      <p class="memoText"><strong>メモ:</strong><br>${linkify(eventObj.memo || "")}</p>
+    </div>
+  `;
+
+  popup.style.display = "block";
+}
+// ▲▲▲ 閲覧者用：イベント内容を表示するポップアップ ▲▲▲
+
+// ▼▼▼ 閲覧ポップアップの閉じるボタン ▼▼▼
+document.getElementById("popupClose").onclick = () => {
+  document.getElementById("popup").style.display = "none";
+};
+// ▲▲▲ 閲覧ポップアップの閉じるボタン ▲▲▲
+</script>
+
+<div id="loginLink" class="login-link">||ログイン||</div>
+</body>
+</html>
