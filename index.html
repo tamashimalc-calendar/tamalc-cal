@@ -600,7 +600,9 @@ function isLoggedIn() {
   return localStorage.getItem("loggedIn") === "true";
 }
 
+<!-- TODO: Apps Script依存 -->
 const holidays = JSON.parse(<?= holidays ?>);
+
 
 let year = <?= year ?>;
 let month = <?= month ?>;   // ← +1 を消して元に戻す
@@ -649,6 +651,7 @@ function moveMonth(diff) {
   document.getElementById("yearText").innerText = `${year}年`;
 
   // ★★★ 祝日 → イベント の順で再取得してカレンダー更新 ★★★
+  <!-- TODO: ここApps Script依存 -->
   google.script.run
     .withSuccessHandler(newHolidays => {
 
@@ -659,6 +662,7 @@ function moveMonth(diff) {
     .getHolidays(year, month);   // ← 正しい位置
 
   // 次にイベントを取得してカレンダー描画
+  <!-- TODO: google.script.run依存 -->
   google.script.run
     .withSuccessHandler(events => {
       buildCalendar(events);
@@ -928,6 +932,7 @@ document.getElementById("formSubmit").onclick = () => {
   if (currentEditRow !== null) {
 
     // ★ 編集モード → updateEvent を呼ぶ
+    <!-- TODO: ここApps Script依存 -->
     google.script.run
       .withSuccessHandler(() => {
         document.getElementById("formSubmit").disabled = false;
@@ -952,6 +957,7 @@ document.getElementById("formSubmit").onclick = () => {
   }
 
   // ★ 新規追加モード（今までの処理）
+  <!-- TODO: ここApps Script依存 --イベント追加・再描画・初期ロード>
   google.script.run
     .withSuccessHandler(() => {
       document.getElementById("formSubmit").disabled = false;
@@ -990,6 +996,7 @@ document.getElementById("formDelete").onclick = () => {
   if (currentEditRow !== null) {
 
     // ★ 削除ボタンを一時的に無効化（連打防止）
+    <!-- TODO: ここApps Script依存 -->
     document.getElementById("formDelete").disabled = true;
 
     google.script.run
@@ -1018,6 +1025,7 @@ document.getElementById("formDelete").onclick = () => {
   }
 };
             // ★ カレンダー更新後に削除ボタンを再び有効化
+  <!-- TODO: ここApps Script依存 -->
 document.getElementById("formDelete").onclick = () => {
   if (currentEditRow !== null) {
 
@@ -1050,6 +1058,7 @@ document.getElementById("loginButton").addEventListener("click", function () {
     document.getElementById("loginOverlay").style.display = "none";
 
     // ★ 追加するのはこの1行だけ（余計な閉じは付けない）
+    <!-- TODO: ここApps Script依存 -->
   
     google.script.run
       .withSuccessHandler(events => {
@@ -1217,3 +1226,4 @@ document.getElementById("popupClose").onclick = () => {
 </body>
 
 </html> 
+
