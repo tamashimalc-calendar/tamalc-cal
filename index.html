@@ -597,9 +597,17 @@ td.saturday {
 function isLoggedIn() {
   return localStorage.getItem("loggedIn") === "true";
 }
+// 【作業印_20260218_追加】祝日データ取得API
+async function fetchHolidays() {
+  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getHolidays";
+  const res = await fetch(url);
+  return await res.json();
+}
 
 
-const holidays = JSON.parse(<?= holidays ?>);
+// 【作業印_20260218_修正】holidays取得方法をテンプレート構文からAPI取得に変更
+const holidays = await fetchHolidays();
+
 
 let year = <?= year ?>;
 let month = <?= month ?>;   // ← +1 を消して元に戻す
@@ -1283,6 +1291,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
