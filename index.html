@@ -1245,6 +1245,37 @@ document.getElementById("popupClose").onclick = () => {
   document.getElementById("popup").style.display = "none";
 };
 // ▲▲▲ 閲覧ポップアップの閉じるボタン ▲▲▲
+    /* ------------------------------------------------------------
+【作業印_20260217】
+【API追加】updateEvent を Apps Script に送信する fetch 関数を追加
+既存コードは一切変更しない
+------------------------------------------------------------ */
+async function fetchUpdateEvent(row, date, start, end, category, title, memo, place, participants) {
+
+  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
+
+  const body = {
+    action: "updateEvent",
+    row: row,
+    date: date,
+    start: start,
+    end: end,
+    category: category,
+    title: title,
+    memo: memo,
+    place: place,
+    participants: participants
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  const result = await res.json();
+  return result;
+}
 </script>
 <div id="loginLink" class="login-link">||ログイン||</div>
 
@@ -1252,5 +1283,6 @@ document.getElementById("popupClose").onclick = () => {
 
 
 </html>
+
 
 
