@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="icon" type="image/png" href="favicon.png">
 <title>玉島LCカレンダー</title>
 <meta name="apple-mobile-web-app-title" content="玉島LCカレンダー">
 
@@ -503,19 +504,17 @@ td.saturday {
   </div>
 </div>
 
-<button id="logoutBtn" style="
+<div id="logoutLink" onclick="logout()" style="
+  display:none;
   position: fixed;
-  top: 10px;
-  right: 10px;
-  padding: 8px 12px;
-  background: #c93a40;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  bottom: 10px;
+  left: 10px;
+  font-size: 12px;
+  color: #333;
   cursor: pointer;
-  display: none;
   z-index: 9000;
-">ログアウト</button>
+">||ログアウト||</div>
+
 <!-- ▲▲▲ ログイン画面（完全版）ここまで ▲▲▲ -->
 
 <!-- 月ナビゲーション -->
@@ -600,9 +599,8 @@ function isLoggedIn() {
   return localStorage.getItem("loggedIn") === "true";
 }
 
-<!-- TODO: Apps Script依存 -->
-const holidays = JSON.parse(<?= holidays ?>);
 
+const holidays = JSON.parse(<?= holidays ?>);
 
 let year = <?= year ?>;
 let month = <?= month ?>;   // ← +1 を消して元に戻す
@@ -651,7 +649,6 @@ function moveMonth(diff) {
   document.getElementById("yearText").innerText = `${year}年`;
 
   // ★★★ 祝日 → イベント の順で再取得してカレンダー更新 ★★★
-  <!-- TODO: ここApps Script依存 -->
   google.script.run
     .withSuccessHandler(newHolidays => {
 
@@ -662,7 +659,6 @@ function moveMonth(diff) {
     .getHolidays(year, month);   // ← 正しい位置
 
   // 次にイベントを取得してカレンダー描画
-  <!-- TODO: google.script.run依存 -->
   google.script.run
     .withSuccessHandler(events => {
       buildCalendar(events);
@@ -928,67 +924,95 @@ document.getElementById("formSubmit").onclick = () => {
     return;
   }
 
+// ------------------------------------------------------------
+// 【作業印_20260217】
+// 【API追加】getEvents を fetch で取得する関数
+// ------------------------------------------------------------
+async function fetchEvents(year, month) {
+  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
+  const res = await fetch(url);
+  return await res.json();
+}
+
   // ★★★ 編集モードかどうかで分岐 ★★★
   if (currentEditRow !== null) {
 
     // ★ 編集モード → updateEvent を呼ぶ
-    <!-- TODO: ここApps Script依存 -->
-    google.script.run
-      .withSuccessHandler(() => {
-        document.getElementById("formSubmit").disabled = false;
-        closeForm();
+// ------------------------------------------------------------
+// 【作業印_20260217】
+// 【変更理由】updateEvent を fetch に置き換え
+// ------------------------------------------------------------
+try {
+  document.getElementById("formSubmit").disabled = true;
 
-        google.script.run
-          .withSuccessHandler(events => {
-            buildCalendar(events);
-            document.getElementById("currentMonth").innerText = `${month}月`;
-            document.getElementById("yearText").innerText = `${year}年`;
-          })
-          .getEvents(year, month);
-      })
-      .withFailureHandler(err => {
-        alert("更新に失敗しました。");
-        console.log(err);
-        document.getElementById("formSubmit").disabled = false;
-      })
-      .updateEvent(currentEditRow, date, start, end, category, title, memo, place, participants);
+  // ★ updateEvent を fetch で送信
+  await fetchUpdateEvent(
+    currentEditRow,
+    date, start, end,
+    category, title, memo, place, participants
+  );
 
-    return;
-  }
+  closeForm();
+
+  // ★ 最新イベントを取得
+  const events = await fetchEvents(year, month);
+
+  buildCalendar(events);
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+} catch (err) {
+  alert("更新に失敗しました。");
+  console.log(err);
+
+} finally {
+  document.getElementById("formSubmit").disabled = false;
+}
+
+return;
 
   // ★ 新規追加モード（今までの処理）
-  <!-- TODO: ここApps Script依存 --イベント追加・再描画・初期ロード>
-  google.script.run
-    .withSuccessHandler(() => {
-      document.getElementById("formSubmit").disabled = false;
-      closeForm();
+  // ------------------------------------------------------------
+// 【作業印_20260217】
+// 【変更理由】addEvent を fetch に置き換え
+// ------------------------------------------------------------
+try {
+  document.getElementById("formSubmit").disabled = true;
 
-      google.script.run
-        .withSuccessHandler(events => {
-          buildCalendar(events);
-          document.getElementById("currentMonth").innerText = `${month}月`;
-          document.getElementById("yearText").innerText = `${year}年`;
-        })
-        .getEvents(year, month);
-    })
-    .withFailureHandler(err => {
-      alert("登録に失敗しました。");
-      console.log(err);
-    })
-    .addEvent(date, start, end, category, title, memo, place, participants);
+  // ★ addEvent を fetch で送信
+  await fetchAddEvent(date, start, end, category, title, memo, place, participants);
 
-  return;
+  closeForm();
+
+  // ★ 最新イベントを取得
+  const events = await fetchEvents(year, month);
+
+  buildCalendar(events);
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+} catch (err) {
+  alert("登録に失敗しました。");
+  console.log(err);
+
+} finally {
+  document.getElementById("formSubmit").disabled = false;
+}
+
+return;
 };
 
-window.onload = function() {
-  google.script.run
-    .withSuccessHandler(events => {
-      buildCalendar(events);
-      document.getElementById("currentMonth").innerText = `${month}月`;
-      document.getElementById("yearText").innerText = `${year}年`;
-    })
-    .getEvents(year, month);
+// ------------------------------------------------------------
+// 【作業印_20260217】
+// 【変更理由】google.script.run を外部API(fetch)に置き換え
+// ------------------------------------------------------------
+window.onload = async function() {
+  const events = await fetchEvents(year, month);
+  buildCalendar(events);
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
 };
+
 
 // ★★★ ここから追加する ★★★
 
@@ -996,80 +1020,74 @@ document.getElementById("formDelete").onclick = () => {
   if (currentEditRow !== null) {
 
     // ★ 削除ボタンを一時的に無効化（連打防止）
-    <!-- TODO: ここApps Script依存 -->
-    document.getElementById("formDelete").disabled = true;
+   // ------------------------------------------------------------
+// 【作業印_20260217】
+// 【API追加】deleteEvent を fetch で送信する関数
+// ------------------------------------------------------------
+async function fetchDeleteEvent(row) {
+  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
 
-    google.script.run
-      .withSuccessHandler(() => {
-        closeForm();
+  const formData = new FormData();
+  formData.append("action", "deleteEvent");
+  formData.append("row", row);
 
-        google.script.run
-          .withSuccessHandler(events => {
-            buildCalendar(events);
-            document.getElementById("currentMonth").innerText = `${month}月`;
-            document.getElementById("yearText").innerText = `${year}年`;
-          })
-          .getEvents(year, month);
+  const res = await fetch(url, {
+    method: "POST",
+    body: formData
+  });
 
-        // ★ 削除ボタンを再度有効化
-        document.getElementById("formDelete").disabled = false;
-      })
-      .withFailureHandler(err => {
-        alert("削除に失敗しました。");
-        console.log(err);
+  return await res.json();
+} 
+    
+    // ------------------------------------------------------------
+// 【作業印_20260217】
+// 【変更理由】deleteEvent を fetch に置き換え
+// ------------------------------------------------------------
+try {
+  document.getElementById("formDelete").disabled = true;
 
-        // ★ エラー時も削除ボタンを戻す
-        document.getElementById("formDelete").disabled = false;
-      })
-      .deleteEvent(currentEditRow);
-  }
-};
-            // ★ カレンダー更新後に削除ボタンを再び有効化
-  <!-- TODO: ここApps Script依存 -->
-document.getElementById("formDelete").onclick = () => {
-  if (currentEditRow !== null) {
+  // ★ deleteEvent を fetch で送信
+  await fetchDeleteEvent(currentEditRow);
 
-    document.getElementById("formDelete").disabled = true;
+  closeForm();
 
-    google.script.run
-      .withSuccessHandler(() => {
-        closeForm();
+  // ★ 最新イベントを取得
+  const events = await fetchEvents(year, month);
 
-        google.script.run
-          .withSuccessHandler(events => {
-            buildCalendar(events);
-            document.getElementById("formDelete").disabled = false;
-          })
-          .getEvents(year, month);
-      })
-      .deleteEvent(currentEditRow);
-  }
-};
+  buildCalendar(events);
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+} catch (err) {
+  alert("削除に失敗しました。");
+  console.log(err);
+
+} finally {
+  // ★ 成功でも失敗でも必ずボタンを戻す
+  document.getElementById("formDelete").disabled = false;
+}
+
 // ▼▼▼ ログイン処理をここに追加 ▼▼▼
 document.getElementById("loginButton").addEventListener("click", function () {
   const id = document.getElementById("loginId").value;
   const pw = document.getElementById("loginPw").value;
 
-  // ▼▼▼ ログイン成功時の処理 ▼▼▼
-  if (id === "tamal" && pw === "tamal1956") {
+// ▼▼▼ ログイン成功時の処理 ▼▼▼
+if (id === "tamal" && pw === "tamal1956") {
 
-    localStorage.setItem("loggedIn", "true");
-    document.getElementById("logoutBtn").style.display = "block";
-    document.getElementById("loginOverlay").style.display = "none";
+  localStorage.setItem("loggedIn", "true");
+  document.getElementById("logoutLink").style.display = "block";
+  document.getElementById("loginOverlay").style.display = "none";
 
-    // ★ 追加するのはこの1行だけ（余計な閉じは付けない）
-    <!-- TODO: ここApps Script依存 -->
-  
-    google.script.run
-      .withSuccessHandler(events => {
-        buildCalendar(events);
-        document.getElementById("currentMonth").innerText = `${month}月`;
-        document.getElementById("yearText").innerText = `${year}年`;
-      })
-      .getEvents(year, month);
+  // ★ fetchEvents に置き換え
+  const events = await fetchEvents(year, month);
 
-    return;
-  }
+  buildCalendar(events);
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+  return;
+}
   // ▲▲▲ ログイン成功時の処理ここまで ▲▲▲
 
   // ログイン失敗
@@ -1084,7 +1102,12 @@ document.getElementById("loginClose").addEventListener("click", function () {
 });
 
 
-/* ▼▼▼ ページ読み込み時の自動ログイン ▼▼▼ */
+/* 
+  ▼▼▼ ページ読み込み時の自動ログイン（2026-02-16 無効化）
+  理由：閲覧者までログイン扱いになってしまうため。
+  この処理があると saved が true でも null でも
+  loginOverlay が常に非表示になり、意図しない自動ログイン状態になる。
+  
 window.addEventListener("load", function () {
   const saved = localStorage.getItem("loggedIn");
 
@@ -1092,8 +1115,8 @@ window.addEventListener("load", function () {
     // 自動ログイン
     document.getElementById("loginOverlay").style.display = "none";
 
-    // ★ ③：ログアウトボタンを表示する
-    document.getElementById("logoutBtn").style.display = "block";
+    // ★ ③：ログアウトリンクを表示する
+    document.getElementById("logoutLink").style.display = "block";
   }
 
   // ★ 閲覧者（saved が null）はログイン画面を出さない
@@ -1101,18 +1124,21 @@ window.addEventListener("load", function () {
     document.getElementById("loginOverlay").style.display = "none";
   }
 });
-/* ▲▲▲ 自動ログインここまで ▲▲▲ */
+  
+  ▲▲▲ 自動ログインここまで ▲▲▲
+*/
+
 
 // ▼▼▼ ログアウト処理 ▼▼▼
-document.getElementById("logoutBtn").addEventListener("click", function () {
+document.getElementById("logoutLink").addEventListener("click", function () {
   // 保存されたログイン状態を削除
   localStorage.removeItem("loggedIn");
 
   // ログイン画面を再表示
-  document.getElementById("loginOverlay").style.display = "flex";  // ← ここだけ修正
+  document.getElementById("loginOverlay").style.display = "flex";
 
-  // ログアウトボタンを隠す
-  document.getElementById("logoutBtn").style.display = "none";
+  // ログアウトリンクを隠す
+  document.getElementById("logoutLink").style.display = "none";
 
   // ログアウトしたら編集UIを隠す
   hideEditorUI();
@@ -1221,9 +1247,8 @@ document.getElementById("popupClose").onclick = () => {
 };
 // ▲▲▲ 閲覧ポップアップの閉じるボタン ▲▲▲
 </script>
-
 <div id="loginLink" class="login-link">||ログイン||</div>
+
 </body>
 
-</html> 
-
+</html>
