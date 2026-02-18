@@ -1050,6 +1050,11 @@ document.getElementById("formDelete").onclick = async () => {
   if (currentEditRow !== null) {
 
     // ★ 削除ボタンを一時的に無効化（連打防止）
+
+  }  // ← ★ ここで if を閉じる（閉じ②）
+
+};  // ← ★ ここで onclick を閉じる（閉じ①）
+
    // ------------------------------------------------------------
 // 【作業印_20260217】
 // 【API追加】deleteEvent を fetch で送信する関数
@@ -1329,4 +1334,5 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
