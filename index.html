@@ -965,74 +965,105 @@ async function fetchEvents(year, month) {
   return await res.json();
 }
 
+  function closeForm() {
+  document.getElementById("formOverlay").style.display = "none";
+}
+
+// 【作業印_20260218】await を使うため async を付与
+document.getElementById("formSubmit").onclick = async () => {
+
+  document.getElementById("formSubmit").disabled = true;
+
+  const date = document.getElementById("formDate").value;
+  const start = document.getElementById("formStart").value.trim();
+  const end = document.getElementById("formEnd").value.trim();
+  const category = document.getElementById("formCategory").value;
+  const title = document.getElementById("formTitleInput").value.trim();
+  const memo = document.getElementById("formMemo").value.trim();
+  const place = document.getElementById("formPlace").value.trim();
+  const participants = document.getElementById("formParticipants").value.trim();
+
+  if (!date || !title) {
+    alert("日付とタイトルは必須です。");
+    document.getElementById("formSubmit").disabled = false;
+    return;
+  }
+
   // ★★★ 編集モードかどうかで分岐 ★★★
   if (currentEditRow !== null) {
 
     // ★ 編集モード → updateEvent を呼ぶ
-// ------------------------------------------------------------
-// 【作業印_20260217】
-// 【変更理由】updateEvent を fetch に置き換え
-// ------------------------------------------------------------
-try {
-  document.getElementById("formSubmit").disabled = true;
+    // ------------------------------------------------------------
+    // 【作業印_20260217】
+    // 【変更理由】updateEvent を fetch に置き換え
+    // ------------------------------------------------------------
+    try {
+      // ★ updateEvent を fetch で送信
+      await fetchUpdateEvent(
+        currentEditRow,
+        date, start, end,
+        category, title, memo, place, participants
+      );
 
-  // ★ updateEvent を fetch で送信
-  await fetchUpdateEvent(
-    currentEditRow,
-    date, start, end,
-    category, title, memo, place, participants
-  );
+      closeForm();
 
-  closeForm();
+      // ★ 最新イベントを取得
+      const events = await fetchEvents(year, month);
 
-  // ★ 最新イベントを取得
-  const events = await fetchEvents(year, month);
+      buildCalendar(events);
+      document.getElementById("currentMonth").innerText = `${month}月`;
+      document.getElementById("yearText").innerText = `${year}年`;
 
-  buildCalendar(events);
-  document.getElementById("currentMonth").innerText = `${month}月`;
-  document.getElementById("yearText").innerText = `${year}年`;
+    } catch (err) {
+      alert("更新に失敗しました。");
+      console.log(err);
 
-} catch (err) {
-  alert("更新に失敗しました。");
-  console.log(err);
+    } finally {
+      document.getElementById("formSubmit").disabled = false;
+    }
 
-} finally {
-  document.getElementById("formSubmit").disabled = false;
-}
-
-return;
+    return;
+  }
 
   // ★ 新規追加モード（今までの処理）
   // ------------------------------------------------------------
-// 【作業印_20260217】
-// 【変更理由】addEvent を fetch に置き換え
+  // 【作業印_20260217】
+  // 【変更理由】addEvent を fetch に置き換え
+  // ------------------------------------------------------------
+  try {
+    // ★ addEvent を fetch で送信
+    await fetchAddEvent(date, start, end, category, title, memo, place, participants);
+
+    closeForm();
+
+    // ★ 最新イベントを取得
+    const events = await fetchEvents(year, month);
+
+    buildCalendar(events);
+    document.getElementById("currentMonth").innerText = `${month}月`;
+    document.getElementById("yearText").innerText = `${year}年`;
+
+  } catch (err) {
+    alert("登録に失敗しました。");
+    console.log(err);
+
+  } finally {
+    document.getElementById("formSubmit").disabled = false;
+  }
+
+  return;
+};  // ← onclick の正しい閉じ位置
+
+
 // ------------------------------------------------------------
-try {
-  document.getElementById("formSubmit").disabled = true;
-
-  // ★ addEvent を fetch で送信
-  await fetchAddEvent(date, start, end, category, title, memo, place, participants);
-
-  closeForm();
-
-  // ★ 最新イベントを取得
-  const events = await fetchEvents(year, month);
-
-  buildCalendar(events);
-  document.getElementById("currentMonth").innerText = `${month}月`;
-  document.getElementById("yearText").innerText = `${year}年`;
-
-} catch (err) {
-  alert("登録に失敗しました。");
-  console.log(err);
-
-} finally {
-  document.getElementById("formSubmit").disabled = false;
+// 【作業印_20260217】
+// 【API追加】getEvents を fetch で取得する関数
+// ------------------------------------------------------------
+async function fetchEvents(year, month) {
+  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
+  const res = await fetch(url);
+  return await res.json();
 }
-
-return;
-};
-
 // ------------------------------------------------------------
 // 【作業印_20260217】
 // 【変更理由】google.script.run を外部API(fetch)に置き換え
