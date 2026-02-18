@@ -933,7 +933,8 @@ function closeForm() {
   document.getElementById("formOverlay").style.display = "none";
 }
 
-document.getElementById("formSubmit").onclick = () => {
+// 【作業印_20260218】await を使うため async を付与
+document.getElementById("formSubmit").onclick = async () => {
 
   document.getElementById("formSubmit").disabled = true;
 
@@ -1326,6 +1327,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
