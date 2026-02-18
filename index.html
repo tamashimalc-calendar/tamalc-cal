@@ -1049,15 +1049,50 @@ window.onload = async function() {
 
 // 【作業印_20260218】await を使うため async を付与
 document.getElementById("formDelete").onclick = async () => {
+
   if (currentEditRow !== null) {
 
     // ★ 削除ボタンを一時的に無効化（連打防止）
+    // ※ 本来ここに try ブロックが入る
+
+    // ------------------------------------------------------------
+    // 【作業印_20260217】
+    // 【変更理由】deleteEvent を fetch に置き換え
+    // ★ この try〜catch〜finally 全体が「if の中」に入るべきブロック
+    // ------------------------------------------------------------
+    try {
+      document.getElementById("formDelete").disabled = true;
+
+      // ★ deleteEvent を fetch で送信
+      await fetchDeleteEvent(currentEditRow);
+
+      closeForm();
+
+      // ★ 最新イベントを取得
+      const events = await fetchEvents(year, month);
+
+      buildCalendar(events);
+      document.getElementById("currentMonth").innerText = `${month}月`;
+      document.getElementById("yearText").innerText = `${year}年`;
+
+    } catch (err) {
+      alert("削除に失敗しました。");
+      console.log(err);
+
+    } finally {
+      // ★ 成功でも失敗でも必ずボタンを戻す
+      document.getElementById("formDelete").disabled = false;
+    }
+    // ★ try ブロックはここまで
+    // ------------------------------------------------------------
 
   }  // ← ★ ここで if を閉じる（閉じ②）
 
 };  // ← ★ ここで onclick を閉じる（閉じ①）
 
-   // ------------------------------------------------------------
+
+
+// ------------------------------------------------------------
 // 【作業印_20260217】
 // 【API追加】deleteEvent を fetch で送信する関数
 // ------------------------------------------------------------
@@ -1074,36 +1109,7 @@ async function fetchDeleteEvent(row) {
   });
 
   return await res.json();
-} 
-    
-    // ------------------------------------------------------------
-// 【作業印_20260217】
-// 【変更理由】deleteEvent を fetch に置き換え
-// ------------------------------------------------------------
-try {
-  document.getElementById("formDelete").disabled = true;
-
-  // ★ deleteEvent を fetch で送信
-  await fetchDeleteEvent(currentEditRow);
-
-  closeForm();
-
-  // ★ 最新イベントを取得
-  const events = await fetchEvents(year, month);
-
-  buildCalendar(events);
-  document.getElementById("currentMonth").innerText = `${month}月`;
-  document.getElementById("yearText").innerText = `${year}年`;
-
-} catch (err) {
-  alert("削除に失敗しました。");
-  console.log(err);
-
-} finally {
-  // ★ 成功でも失敗でも必ずボタンを戻す
-  document.getElementById("formDelete").disabled = false;
 }
-
 // ▼▼▼ ログイン処理をここに追加 ▼▼▼
 // 【作業印_20260218】await を使うため async を付与
 document.getElementById("loginButton").addEventListener("click", async function () {
@@ -1336,3 +1342,4 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
