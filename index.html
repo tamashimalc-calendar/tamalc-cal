@@ -656,24 +656,43 @@ function moveMonth(diff) {
   document.getElementById("currentMonth").innerText = `${month}月`;
   document.getElementById("yearText").innerText = `${year}年`;
 
-  // ★★★ 祝日 → イベント の順で再取得してカレンダー更新 ★★★
-  google.script.run
-    .withSuccessHandler(newHolidays => {
+// ------------------------------------------------------------
+// 【作業印_20260218】
+// 【変更理由】google.script.run は GitHub では動作しないため、
+//              祝日・イベント取得を fetch API に統一。
+// ------------------------------------------------------------
+async function moveMonth(diff) {
+  month = Number(month);
+  year = Number(year);
 
-      // holidays を新しい月の祝日で更新
-      holidays.length = 0;
-      newHolidays.forEach(h => holidays.push(h));
-    })
-    .getHolidays(year, month);   // ← 正しい位置
+  let newMonth = month + diff;
+  let newYear = year;
 
-  // 次にイベントを取得してカレンダー描画
-  google.script.run
-    .withSuccessHandler(events => {
-      buildCalendar(events);
-      document.getElementById("currentMonth").innerText = `${month}月`;
-      document.getElementById("yearText").innerText = `${year}年`;
-    })
-    .getEvents(year, month);
+  if (newMonth < 1) {
+    newMonth = 12;
+    newYear--;
+  } else if (newMonth > 12) {
+    newMonth = 1;
+    newYear++;
+  }
+
+  year = newYear;
+  month = newMonth;
+
+  // 表示更新
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+  // ★★★ GitHub 版：祝日を API(fetch) で取得 ★★★
+  const holidaysData = await fetchHolidays();
+  holidays.length = 0;
+  holidays.push(...holidaysData);
+
+  // ★★★ GitHub 版：イベントを API(fetch) で取得 ★★★
+  const events = await fetchEvents(year, month);
+
+  // カレンダー描画
+  buildCalendar(events);
 }
 
     function getCategoryClass(category) {
@@ -1306,6 +1325,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
