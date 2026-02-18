@@ -606,7 +606,7 @@ async function fetchHolidays() {
 
 
 // 【作業印_20260218_修正】holidays取得方法をテンプレート構文からAPI取得に変更
-const holidays = await fetchHolidays();
+
 
 
 let year = <?= year ?>;
@@ -1284,6 +1284,20 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
   const result = await res.json();
   return result;
 }
+    window.addEventListener("load", async () => {
+  // 【作業印_20260218_初回描画】祝日取得
+  const holidays = await fetchHolidays();
+
+  // 【作業印_20260218_初回描画】イベント取得
+  const events = await fetchEvents(year, month);
+
+  // カレンダー描画
+  buildCalendar(events);
+
+  // 表示更新
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+});
 </script>
 <div id="loginLink" class="login-link">||ログイン||</div>
 
@@ -1291,6 +1305,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
