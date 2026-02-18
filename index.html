@@ -634,7 +634,8 @@ function getColor(category) {
 // ★★★ ここまで ★★★
 
 
-function moveMonth(diff) {
+// 【作業印_20260218】await を使うため async を付与
+async function moveMonth(diff) {
   month = Number(month);
   year = Number(year);
 
@@ -1325,6 +1326,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
