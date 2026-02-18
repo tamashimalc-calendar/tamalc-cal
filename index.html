@@ -1045,7 +1045,8 @@ window.onload = async function() {
 
 // ★★★ ここから追加する ★★★
 
-document.getElementById("formDelete").onclick = () => {
+// 【作業印_20260218】await を使うため async を付与
+document.getElementById("formDelete").onclick = async () => {
   if (currentEditRow !== null) {
 
     // ★ 削除ボタンを一時的に無効化（連打防止）
@@ -1327,6 +1328,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
