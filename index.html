@@ -1098,7 +1098,8 @@ try {
 }
 
 // ▼▼▼ ログイン処理をここに追加 ▼▼▼
-document.getElementById("loginButton").addEventListener("click", function () {
+// 【作業印_20260218】await を使うため async を付与
+document.getElementById("loginButton").addEventListener("click", async function () {
   const id = document.getElementById("loginId").value;
   const pw = document.getElementById("loginPw").value;
 
@@ -1328,6 +1329,7 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
 
