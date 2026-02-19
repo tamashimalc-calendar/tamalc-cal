@@ -732,33 +732,7 @@ function getColor(category) {
 
 
 
-// 【作業印_20260218】await を使うため async を付与
-async function moveMonth(diff) {
-  month = Number(month);
-  year = Number(year);
 
-
-  let newMonth = month + diff;
-  let newYear = year;
-
-
-  if (newMonth < 1) {
-    newMonth = 12;
-    newYear--;
-  } else if (newMonth > 12) {
-    newMonth = 1;
-    newYear++;
-  }
-
-
-  year = newYear;
-  month = newMonth;
-
-
-  // 表示更新
-document.getElementById("currentMonth").innerText = `${month}月`;
-document.getElementById("yearText").innerText = `${year}年`;
-}  // ← ★★★ moveMonth の閉じ
 
 
 // ------------------------------------------------------------
@@ -1014,12 +988,6 @@ const content =
   document.getElementById("popup").style.display = "block";
 }
 
-
-document.getElementById("popupClose").onclick = () => {
-  document.getElementById("popup").style.display = "none";
-};
-
-
 document.getElementById("formClose").onclick = () => {
   closeForm();   // ★ ここが今回追加する1行
 };
@@ -1085,50 +1053,6 @@ document.getElementById("formOverlay").style.display = "block";
 }
 
 
-function closeForm() {
-  document.getElementById("formOverlay").style.display = "none";
-}
-
-
-// 【作業印_20260218】await を使うため async を付与
-document.getElementById("formSubmit").onclick = async () => {
-
-
-  document.getElementById("formSubmit").disabled = true;
-
-
-  const date = document.getElementById("formDate").value;
-  const start = document.getElementById("formStart").value.trim();
-  const end = document.getElementById("formEnd").value.trim();
-  const category = document.getElementById("formCategory").value;
-  const title = document.getElementById("formTitleInput").value.trim();
-  const memo = document.getElementById("formMemo").value.trim();
-  const place = document.getElementById("formPlace").value.trim();
-  const participants = document.getElementById("formParticipants").value.trim();
-
-
-  if (!date || !title) {
-    alert("日付とタイトルは必須です。");
-    document.getElementById("formSubmit").disabled = false;
-    return;
-  }
-};  // ← ★★★ onclick の閉じ
-
-
-// ------------------------------------------------------------
-// 【作業印_20260217】
-// 【API追加】getEvents を fetch で取得する関数
-// ------------------------------------------------------------
-async function fetchEvents(year, month) {
-  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
-  const res = await fetch(url);
-  return await res.json();
-}
-
-
-  function closeForm() {
-  document.getElementById("formOverlay").style.display = "none";
-}
 
 
 // 【作業印_20260218】await を使うため async を付与
@@ -1237,15 +1161,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 
-// ------------------------------------------------------------
-// 【作業印_20260217】
-// 【API追加】getEvents を fetch で取得する関数
-// ------------------------------------------------------------
-async function fetchEvents(year, month) {
-  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
-  const res = await fetch(url);
-  return await res.json();
-}
+
 // ------------------------------------------------------------
 // 【作業印_20260217】
 // 【変更理由】google.script.run を外部API(fetch)に置き換え
@@ -1320,6 +1236,41 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 
+/* ------------------------------------------------------------
+【作業印_20260217】
+【API追加】getEvents を fetch で取得する関数
+------------------------------------------------------------ */
+async function fetchEvents(year, month) {
+  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
+  const res = await fetch(url);
+  return await res.json();
+}
+
+/* ------------------------------------------------------------
+【作業印_20260219】
+【API追加】addEvent を fetch で送信する関数 ← ★ここが今回追加するもの
+------------------------------------------------------------ */
+async function fetchAddEvent(date, start, end, category, title, memo, place, participants) {
+  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
+
+  const formData = new FormData();
+  formData.append("action", "addEvent");
+  formData.append("date", date);
+  formData.append("start", start);
+  formData.append("end", end);
+  formData.append("category", category);
+  formData.append("title", title);
+  formData.append("memo", memo);
+  formData.append("place", place);
+  formData.append("participants", participants);
+
+  const res = await fetch(url, {
+    method: "POST",
+    body: formData
+  });
+
+  return await res.json();
+}
 
 
 // ------------------------------------------------------------
@@ -1629,6 +1580,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
