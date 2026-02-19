@@ -1595,6 +1595,21 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
   document.getElementById("currentMonth").innerText = `${month}月`;
 document.getElementById("yearText").innerText = `${year}年`;
 });
+  function closeForm() {
+  // フォームを閉じる
+  document.getElementById("formOverlay").style.display = "none";
+
+  // 入力内容をリセット（必要なら）
+  document.getElementById("formStart").value = "";
+  document.getElementById("formEnd").value = "";
+  document.getElementById("formCategory").value = "その他";
+  document.getElementById("formTitleInput").value = "";
+  document.getElementById("formMemo").value = "";
+  document.getElementById("formPlace").value = "";
+  document.getElementById("formParticipants").value = "";
+
+  currentEditRow = null;
+}
 </script>
 <div id="loginLink" class="login-link">||ログイン||</div>
 
@@ -1605,6 +1620,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
