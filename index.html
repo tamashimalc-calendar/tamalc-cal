@@ -882,7 +882,7 @@ while (day <= last.getDate()) {
 
 
   // 日付クリック
- html += <div class="day-number" onclick='if (localStorage.getItem("loggedIn") === "true") openForm("${ymd}", ${day})'>${day}</div>;
+ html += `<div class="day-number" onclick='if (localStorage.getItem("loggedIn") === "true") openForm("${ymd}", ${day})'>${day}</div>`;
 
 
   // 今日のイベント
@@ -1624,6 +1624,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
