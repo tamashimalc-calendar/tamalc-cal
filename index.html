@@ -810,7 +810,31 @@ document.getElementById("yearText").innerText = `${year}年`;
       const urlPattern = /(https?:\/\/[^\s]+)/g;
       return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
     }
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 作業日：2026-02-19
+// 作業者：くべま ＆ Copilot
+// 修正理由：GitHub Pages 版では Apps Script の再描画が無いため、
+//            月送り処理が存在せずカレンダーが更新されなかった。
+//            そのため “月を進める処理” を新規実装。
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
+function moveMonth(diff) {
+  month += diff;
+
+  if (month < 1) {
+    month = 12;
+    year--;
+  } else if (month > 12) {
+    month = 1;
+    year++;
+  }
+
+  document.getElementById("currentMonth").innerText = `${year}年 ${month}月`;
+
+  fetchEvents(year, month).then(events => {
+    buildCalendar(events);
+  });
+}
 
     function buildCalendar(events) {
   let eventQueue = [];   // ← この1行だけ追加
@@ -1581,6 +1605,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
