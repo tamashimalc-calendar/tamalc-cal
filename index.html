@@ -1527,8 +1527,13 @@ function openViewPopup(eventObj) {
   const color = getColor(eventObj.category);
 
 
-  // 内容を表示（帯＋本文）
-  content.innerHTML = 
+// ------------------------------------------------------------
+// 【作業印_20260219】
+// 【修整理由】1532行目以降の content.innerHTML が分断され、
+//               後半の <div class="memoBody"> がテンプレートリテラル外に
+//               出ていたため、HTML 全体を一つの文字列として復元。
+// ------------------------------------------------------------
+content.innerHTML = `
     <div class="memoHeader" style="
       background:${color.bg};
       color:${color.text};
@@ -1544,15 +1549,13 @@ function openViewPopup(eventObj) {
       </div>
     </div>
 
-
     <div class="memoBody" style="padding:12px;">
       <p><strong>時間:</strong> ${eventObj.start} ～ ${eventObj.end}</p>
       <p><strong>場所:</strong> ${eventObj.place || ""}</p>
       <p><strong>参加者:</strong> ${eventObj.participants || ""}</p>
       <p class="memoText"><strong>メモ:</strong><br>${linkify(eventObj.memo || "")}</p>
     </div>
-;
-
+`;
 
   popup.style.display = "block";
 }
@@ -1626,6 +1629,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
