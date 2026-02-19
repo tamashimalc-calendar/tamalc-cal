@@ -829,7 +829,7 @@ function moveMonth(diff) {
     year++;
   }
 
-  document.getElementById("currentMonth").innerText = `${year}年 ${month}月`;
+  document.getElementById("currentMonth").innerText = `${month}月`;
 
   fetchEvents(year, month).then(events => {
     buildCalendar(events);
@@ -1605,6 +1605,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
