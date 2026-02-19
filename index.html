@@ -1326,21 +1326,23 @@ document.getElementById("yearText").innerText = `${year}年`;
 // 【作業印_20260217】
 // 【API追加】deleteEvent を fetch で送信する関数
 // ------------------------------------------------------------
+//
+// ------------------------------------------------------------
+// 【作業印_20260219】
+// 【修整理由】fetchDeleteEvent の関数ブロック構造が崩れていたため、
+//               await を含む処理を関数内に戻す形で構造を復元。
+// ------------------------------------------------------------
 async function fetchDeleteEvent(row) {
   const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
-}
-
 
   const formData = new FormData();
   formData.append("action", "deleteEvent");
   formData.append("row", row);
 
-
   const res = await fetch(url, {
     method: "POST",
     body: formData
   });
-
 
   return await res.json();
 }
@@ -1624,6 +1626,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
