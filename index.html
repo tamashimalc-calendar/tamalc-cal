@@ -960,7 +960,7 @@ div.onclick = () => {
 
 
     // ★ 対応する td を取得
-    const cell = document.querySelector(td[data-date="${dateStr}"]);
+    const cell = document.querySelector(`td[data-date="${dateStr}"]`);
     if (cell) {
       cell.appendChild(div);
 
@@ -1624,6 +1624,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
