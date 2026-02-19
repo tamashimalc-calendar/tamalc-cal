@@ -789,9 +789,8 @@ async function moveMonth(diff) {
 
 
   // 表示更新
-  document.getElementById("currentMonth").innerText = ${month}月;
-  document.getElementById("yearText").innerText = ${year}年;
-
+document.getElementById("currentMonth").innerText = `${month}月`;
+document.getElementById("yearText").innerText = `${year}年`;
 
   // ★★★ GitHub 版：祝日を API(fetch) で取得 ★★★
   const holidaysData = await fetchHolidays();
@@ -865,10 +864,10 @@ async function moveMonth(diff) {
   // ★ イベントを後で追加するための一時保存
 
 
-  while (day <= last.getDate()) {
+while (day <= last.getDate()) {
   const d = new Date(year, month - 1, day);
   const wd = d.getDay();
-  const dateStr = ${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')};
+  const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
   const ymd = dateStr;
 
 
@@ -976,44 +975,39 @@ div.onclick = () => {
 function showPopup(title, start, end, place, memo, participants) {
   let timeText = "";
   if (start && end) {
-    timeText = <p class="infoText">${start}〜${end}</p>;
+    timeText = `<p class="infoText">${start}〜${end}</p>`;
   }
 
+let placeText = "";
+if (place) {
+  placeText = `<p class="infoText"><strong>場所：</strong>${place}</p>`;
+}
 
-  let placeText = "";
-  if (place) {
-    placeText = <p class="infoText"><strong>場所：</strong>${place}</p>;
-  }
-
-
-  let participantsText = "";
-  if (participants) {
-    const list = participants.split(/\s+/);
-    participantsText = 
-      <p class="infoText"><strong>対象者：</strong></p>
-      <div class="participants-line">
-        ${list.map(p => <div class="participant-item">${p}</div>).join("")}
-      </div>
-    ;
-  }
+let participantsText = "";
+if (participants) {
+  const list = participants.split(/\s+/);
+  participantsText =
+    `<p class="infoText"><strong>対象者：</strong></p>
+     <div class="participants-line">
+       ${list.map(p => `<div class="participant-item">${p}</div>`).join("")}
+     </div>`;
+}
 
 
   let memoText = "";
-  if (memo) {
-    memoText = 
-      <p class="memoText"><strong>メモ：</strong><br>${linkify(memo)}</p>
-    ;
-  }
+if (memo) {
+  memoText =
+    `<p class="memoText"><strong>メモ：</strong><br>${linkify(memo)}</p>`;
+}
 
 
   // ★★★ ここに content を戻す ★★★
-  const content = 
-    <h3>${title}</h3>
-    ${timeText}
-    ${placeText}
-    ${participantsText}
-    ${memoText}
-  ;
+const content =
+  `<h3>${title}</h3>
+   ${timeText}
+   ${placeText}
+   ${participantsText}
+   ${memoText}`;
 
 
   document.getElementById("popupContent").innerHTML = content;
@@ -1049,7 +1043,7 @@ function openForm(dateStr, day, eventData = null) {
 
 
   document.getElementById("formTitle").innerText =
-    eventData ? ${dateStr} の予定を編集 : ${dateStr} の予定を追加;
+  (eventData ? `${dateStr} の予定を編集` : `${dateStr} の予定を追加`);
 
 
   if (eventData) {
@@ -1126,7 +1120,7 @@ document.getElementById("formSubmit").onclick = async () => {
 // 【API追加】getEvents を fetch で取得する関数
 // ------------------------------------------------------------
 async function fetchEvents(year, month) {
-  const url = https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month};
+  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
   const res = await fetch(url);
   return await res.json();
 }
@@ -1187,8 +1181,8 @@ document.getElementById("formSubmit").onclick = async () => {
 
 
       buildCalendar(events);
-      document.getElementById("currentMonth").innerText = ${month}月;
-      document.getElementById("yearText").innerText = ${year}年;
+      document.getElementById("currentMonth").innerText = `${month}月`;
+document.getElementById("yearText").innerText = `${year}年`;
 
 
     } catch (err) {
@@ -1223,8 +1217,8 @@ document.getElementById("formSubmit").onclick = async () => {
 
 
     buildCalendar(events);
-    document.getElementById("currentMonth").innerText = ${month}月;
-    document.getElementById("yearText").innerText = ${year}年;
+    document.getElementById("currentMonth").innerText = `${month}月`;
+document.getElementById("yearText").innerText = `${year}年`;
 
 
   } catch (err) {
@@ -1248,7 +1242,7 @@ document.getElementById("formSubmit").onclick = async () => {
 // 【API追加】getEvents を fetch で取得する関数
 // ------------------------------------------------------------
 async function fetchEvents(year, month) {
-  const url = https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month};
+  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
   const res = await fetch(url);
   return await res.json();
 }
@@ -1259,8 +1253,8 @@ async function fetchEvents(year, month) {
 window.onload = async function() {
   const events = await fetchEvents(year, month);
   buildCalendar(events);
-  document.getElementById("currentMonth").innerText = ${month}月;
-  document.getElementById("yearText").innerText = ${year}年;
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
 };
 
 
@@ -1301,8 +1295,8 @@ document.getElementById("formDelete").onclick = async () => {
 
 
       buildCalendar(events);
-      document.getElementById("currentMonth").innerText = ${month}月;
-      document.getElementById("yearText").innerText = ${year}年;
+      document.getElementById("currentMonth").innerText = `${month}月`;
+document.getElementById("yearText").innerText = `${year}年`;
 
 
     } catch (err) {
@@ -1334,6 +1328,7 @@ document.getElementById("formDelete").onclick = async () => {
 // ------------------------------------------------------------
 async function fetchDeleteEvent(row) {
   const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
+}
 
 
   const formData = new FormData();
@@ -1370,8 +1365,8 @@ if (id === "tamal" && pw === "tamal1956") {
 
 
   buildCalendar(events);
-  document.getElementById("currentMonth").innerText = ${month}月;
-  document.getElementById("yearText").innerText = ${year}年;
+ document.getElementById("currentMonth").innerText = `${month}月`;
+document.getElementById("yearText").innerText = `${year}年`;
 
 
   return;
@@ -1616,8 +1611,8 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
   // 表示更新
-  document.getElementById("currentMonth").innerText = ${month}月;
-  document.getElementById("yearText").innerText = ${year}年;
+  document.getElementById("currentMonth").innerText = `${month}月`;
+document.getElementById("yearText").innerText = `${year}年`;
 });
 </script>
 <div id="loginLink" class="login-link">||ログイン||</div>
@@ -1629,5 +1624,6 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
 
 
 </html>
+
 
 
