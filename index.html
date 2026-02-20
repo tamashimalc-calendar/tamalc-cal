@@ -685,7 +685,7 @@ function isLoggedIn() {
 }
 // 【作業印_20260218_追加】祝日データ取得API
 async function fetchHolidays() {
-  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getHolidays";
+  const url = "https://script.google.com/macros/s/AKfycbyaAF80D1udsTDyEv231yYa3JvzYKOwJ6IocUzAfjgKsu0LCXU1v0wr0YtsySZrRbXeoQ/exec?action=getHolidays";
   const res = await fetch(url);
   return await res.json();
 }
@@ -1266,7 +1266,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 【API追加】getEvents を fetch で取得する関数
 ------------------------------------------------------------ */
 async function fetchEvents(year, month) {
-  const url = `https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec?action=getEvents&year=${year}&month=${month}`;
+  const url = `https://script.google.com/macros/s/AKfycbyaAF80D1udsTDyEv231yYa3JvzYKOwJ6IocUzAfjgKsu0LCXU1v0wr0YtsySZrRbXeoQ/exec?action=getEvents&year=${year}&month=${month}`;
   const res = await fetch(url);
   return await res.json();
 }
@@ -1276,8 +1276,7 @@ async function fetchEvents(year, month) {
 【API追加】addEvent を fetch で送信する関数 ← ★ここが今回追加するもの
 ------------------------------------------------------------ */
 async function fetchAddEvent(date, start, end, category, title, memo, place, participants) {
-  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
-
+  const url = "https://script.google.com/macros/s/AKfycbyaAF80D1udsTDyEv231yYa3JvzYKOwJ6IocUzAfjgKsu0LCXU1v0wr0YtsySZrRbXeoQ/exec";
   const formData = new FormData();
   formData.append("action", "addEvent");
   formData.append("date", date);
@@ -1309,7 +1308,7 @@ async function fetchAddEvent(date, start, end, category, title, memo, place, par
 //               await を含む処理を関数内に戻す形で構造を復元。
 // ------------------------------------------------------------
 async function fetchDeleteEvent(row) {
-  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
+  const url = "https://script.google.com/macros/s/AKfycbyaAF80D1udsTDyEv231yYa3JvzYKOwJ6IocUzAfjgKsu0LCXU1v0wr0YtsySZrRbXeoQ/exec";
 
   const formData = new FormData();
   formData.append("action", "deleteEvent");
@@ -1551,7 +1550,7 @@ document.getElementById("popupClose").onclick = () => {
 async function fetchUpdateEvent(row, date, start, end, category, title, memo, place, participants) {
 
 
-  const url = "https://script.google.com/macros/s/AKfycbxc8NldoyG1xq5vGHiZVttC4QrevR-Qb-JKWApXrPvFYPx_sRDp8AJvfN6dAoWHu7ta_w/exec";
+  const url = "https://script.google.com/macros/s/AKfycbyaAF80D1udsTDyEv231yYa3JvzYKOwJ6IocUzAfjgKsu0LCXU1v0wr0YtsySZrRbXeoQ/exec";
 
 
   const body = {
@@ -1620,6 +1619,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
