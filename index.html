@@ -1313,7 +1313,7 @@ async function fetchDeleteEvent(row) {
 
   const formData = new FormData();
   formData.append("action", "deleteEvent");
-  formData.append("row", row);
+  formData.append("rowIndex", row);
 
   const res = await fetch(url, {
     method: "POST",
@@ -1620,6 +1620,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
