@@ -1575,6 +1575,11 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
   const result = await res.json();
   return result;
 }
+  // 作業印_20260221_復旧
+// 修正理由：私の指示で削除された year/month を復元するため
+let year = new Date().getFullYear();
+let month = new Date().getMonth() + 1;
+
     window.addEventListener("load", async () => {
   // 【作業印_20260218_初回描画】祝日取得
   const holidays = await fetchHolidays();
@@ -1617,6 +1622,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 
 
 </html>
+
 
 
 
