@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +19,6 @@ body {
   font-size: 16px;
 }
 
-
 /* 月ナビゲーション */
 .month-nav {
   display: flex;
@@ -32,8 +30,6 @@ body {
   padding: 2px 0;
   line-height: 1;
 }  /* ← この閉じカッコが必要 */
-
-
 
 
 /* ≪ ≫ のボタン（誤タップ防止のため広め） */
@@ -61,14 +57,12 @@ body {
   font-weight: bold;
 }
 
-
 .month-nav {
   display: flex;
   justify-content: space-between; /* 左・中央・右に配置 */
   align-items: center;
   position: relative;
 }
-
 
 .current-month {
   flex: 1;
@@ -78,14 +72,10 @@ body {
 }
 
 
-
-
 .year-text {
   font-size: 18px;
   font-weight: bold;
 }
-
-
 
 
 table {
@@ -106,8 +96,6 @@ th {
   line-height: 35px;
   font-size: 16px;
 }
-
-
 
 
 /* 日付セル */
@@ -151,14 +139,11 @@ td.holiday {
   color: red;
 }
 
-
 /* 土曜（背景水色＋青文字） */
 td.saturday {
   background: #E6FDFE;
   color: blue;
 }
-
-
 
 
 /* 日付部分 */
@@ -169,7 +154,6 @@ td.saturday {
   font-size: 20px;
 }
 
-
 /* 共通イベント枠 */
 .event {
   margin: 2px 0;
@@ -177,7 +161,6 @@ td.saturday {
   font-size: 13px;
   cursor: pointer;
   word-break: break-all;
-
 
   /* 1行に固定 */
   white-space: nowrap;
@@ -193,7 +176,6 @@ td.saturday {
   text-align: center;
 }
 
-
 /* カテゴリ別カラー（左線なし・背景色のみ） */
 .event.rijikai   { background: #E8F4FF; }
 .event.reikai    { background: #FFE8E8; }
@@ -203,13 +185,10 @@ td.saturday {
 .event.taeve     { background: #E5F5EC; }
 .event.sonota    { background: #FFE8F5; }
 
-
 /*：業務連絡（背景色のみ） */
 .event.gyomurenraku {
   background: #D0CECE;
 }
-
-
 
 
 /* ポップアップ外枠（透明） */
@@ -244,7 +223,6 @@ td.saturday {
   -moz-osx-font-smoothing: grayscale !important;
 }
 
-
 /* 閉じるボタン */
 #loginClose, #popupClose {
   position: absolute;
@@ -265,15 +243,11 @@ td.saturday {
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-
-
-
 /* メモ欄の折り返し */
 #popupContent .memo {
   white-space: pre-wrap;
   word-break: break-word;
 }
-
 
 /* モバイル調整 */
 @media (max-width: 480px) {
@@ -286,7 +260,6 @@ td.saturday {
   }
 }
 
-
 /* ここからは @media の外に置くべき通常CSS（位置だけ修正） */
 #popupClose {
   float: right;
@@ -295,8 +268,6 @@ td.saturday {
   line-height: 1;       /* ← 上下の余白を消す */
   margin-top: -6px;     /* ← 丸の中央に揃うよう微調整 */
 }
-
-
 
 
 #popup h3 {
@@ -351,7 +322,6 @@ td.saturday {
       font-size: 14px;
 }
 
-
 .year-line {
   display: flex;
   justify-content: center;
@@ -375,7 +345,6 @@ td.saturday {
        備考：初期状態は display:none のままで問題ない。
   */
   display: none;
-
 
   position: fixed;
   top: 0;
@@ -433,8 +402,6 @@ td.saturday {
 /* ▲▲▲ ログイン画面のCSSここまで ▲▲▲ */
 
 
-
-
 /* ▼▼▼ カレンダー右下のログインリンク ▼▼▼ */
 .login-link {
   /*
@@ -456,8 +423,6 @@ td.saturday {
 /* ▲▲▲ カレンダー右下のログインリンクここまで ▲▲▲ */
 
 
-
-
 /* ▼▼▼ スマホ専用カレンダー調整 ▼▼▼ */
 @media (max-width: 600px) {
 
@@ -468,7 +433,6 @@ td.saturday {
            他UIを巻き込んでレイアウト崩れを起こしたため、
            13:58 時点の正常状態（padding:6px のみ）に戻す。
   */
-
 
   /* ▼ あなたが貼った元の修正ブロック（そのまま残す） ▼
      ▼ 2026/02/10 15:00 修正
@@ -485,13 +449,11 @@ td.saturday {
   }
   */
 
-
   /* ▼ 2026/02/10 15:05 修正
      理由：あとから勝手に追加してしまった
            .day-number と .event のセレクタを完全削除。
            不要な定義を残さず、元の構造だけを維持するため。
   */
-
 
   /* ▼ 2026/02/10 20:35 スマホ崩れ対策
      理由：PC側の td padding がスマホに適用され、
@@ -501,7 +463,6 @@ td.saturday {
   td {
     padding: 0;
   }
-
 
 }
 /* ▲▲▲ スマホ専用カレンダー調整ここまで ▲▲▲ */
@@ -526,19 +487,11 @@ td.saturday {
 }
 /* ▲▲▲ 閲覧者ポップアップ：最終上書き ▲▲▲ */
 
-
-
-
 </style>
-
-
-
 
 </head>
 
-
 <body>
-
 
 <!-- ▼▼▼ ログイン画面（完全版） ▼▼▼ -->
 <div id="loginOverlay">
@@ -563,14 +516,11 @@ td.saturday {
       <input type="text" id="loginId">
     </label>
 
-
     <label>パスワード
       <input type="password" id="loginPw">
     </label>
 
-
     <button id="loginButton">ログイン</button>
-
 
   </div>
 </div>
@@ -606,8 +556,6 @@ td.saturday {
 </div>
 
 
-
-
   <!-- カレンダー本体 -->
   <div id="calendar"></div>
 
@@ -617,7 +565,6 @@ td.saturday {
     <span id="popupClose">✖</span>
     <div id="popupContent"></div>
   </div>
-
 
 <!-- 新規予定入力フォーム -->
 <div id="formOverlay">
@@ -694,15 +641,11 @@ async function fetchHolidays() {
 // 【作業印_20260218_修正】holidays取得方法をテンプレート構文からAPI取得に変更
 
 
-
 let holidays = [];
-
 
 
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
-
-
 
 
 // ★★★ ここに getColor を入れる ★★★
@@ -723,16 +666,7 @@ function getColor(category) {
   return colors[category] || { bg: "#999999", text: "#000000" };
 }
 
-
-
-
 // ★★★ ここまで ★★★
-
-
-
-
-
-
 
 // ------------------------------------------------------------
 // 【作業印_20260218】
@@ -770,15 +704,12 @@ document.getElementById("yearText").innerText = `${year}年`;
   holidays.length = 0;
   holidays.push(...holidaysData);
 
-
   // ★★★ GitHub 版：イベントを API(fetch) で取得 ★★★
   const events = await fetchEvents(year, month);
-
 
   // カレンダー描画
   buildCalendar(events);
 }
-
 
     function getCategoryClass(category) {
   switch (category) {
@@ -799,9 +730,6 @@ document.getElementById("yearText").innerText = `${year}年`;
     default: return '';
   }
 }
-
-
-
 
     function linkify(text) {
       if (!text) return '';
@@ -847,10 +775,8 @@ html += `
   </tr>
 `;
 
-
   let day = 1;
   let w = first.getDay();
-
 
   html += "<tr>";
 
@@ -954,20 +880,14 @@ div.onclick = () => {
 };
 
 
-
-
     // ★ 対応する td を取得
     const cell = document.querySelector(`td[data-date="${dateStr}"]`);
     if (cell) {
       cell.appendChild(div);
 
-
     }
   });
 }
-
-
-
 
 function showPopup(title, start, end, place, memo, participants) {
   let timeText = "";
@@ -1020,8 +940,6 @@ let currentFormDate = null;
 let currentEditRow = null;
 
 
-
-
 function openForm(dateStr, day, eventData = null) {
   document.getElementById("popup").style.display = "none";
 
@@ -1063,20 +981,15 @@ function openForm(dateStr, day, eventData = null) {
     document.getElementById("formPlace").value = "";
     document.getElementById("formParticipants").value = "";
 
-
     document.getElementById("formSubmit").style.display = "inline-block";
 
 
     currentEditRow = null;
   }
 
-
  // ★ フォーム表示
 document.getElementById("formOverlay").style.display = "block";
 }
-
-
-
 
 // 【作業印_20260218】await を使うため async を付与
 document.getElementById("formSubmit").onclick = async () => {
@@ -1119,9 +1032,7 @@ document.getElementById("formSubmit").onclick = async () => {
         category, title, memo, place, participants
       );
 
-
       closeForm();
-
 
       // ★ 最新イベントを取得
       const events = await fetchEvents(year, month);
@@ -1141,11 +1052,8 @@ document.getElementById("yearText").innerText = `${year}年`;
       document.getElementById("formSubmit").disabled = false;
     }
 
-
     return;
   }
-
-
   // ★ 新規追加モード（今までの処理）
   // ------------------------------------------------------------
   // 【作業印_20260217】
@@ -1177,13 +1085,8 @@ document.getElementById("yearText").innerText = `${year}年`;
     document.getElementById("formSubmit").disabled = false;
   }
 
-
   return;
 };  // ← onclick の正しい閉じ位置
-
-
-
-
 
 // ------------------------------------------------------------
 // 【作業印_20260217】
@@ -1195,9 +1098,6 @@ window.onload = async function() {
   document.getElementById("currentMonth").innerText = `${month}月`;
   document.getElementById("yearText").innerText = `${year}年`;
 };
-
-
-
 
 // ★★★ ここから追加する ★★★
 
@@ -1211,8 +1111,6 @@ document.getElementById("formDelete").onclick = async () => {
 
     // ★ 削除ボタンを一時的に無効化（連打防止）
     // ※ 本来ここに try ブロックが入る
-
-
     // ------------------------------------------------------------
     // 【作業印_20260217】
     // 【変更理由】deleteEvent を fetch に置き換え
@@ -1221,17 +1119,13 @@ document.getElementById("formDelete").onclick = async () => {
     try {
       document.getElementById("formDelete").disabled = true;
 
-
       // ★ deleteEvent を fetch で送信
       await fetchDeleteEvent(currentEditRow);
 
-
       closeForm();
-
 
       // ★ 最新イベントを取得
       const events = await fetchEvents(year, month);
-
 
       buildCalendar(events);
       document.getElementById("currentMonth").innerText = `${month}月`;
@@ -1242,7 +1136,6 @@ document.getElementById("yearText").innerText = `${year}年`;
       alert("削除に失敗しました。");
       console.log(err);
 
-
     } finally {
       // ★ 成功でも失敗でも必ずボタンを戻す
       document.getElementById("formDelete").disabled = false;
@@ -1250,14 +1143,9 @@ document.getElementById("yearText").innerText = `${year}年`;
     // ★ try ブロックはここまで
     // ------------------------------------------------------------
 
-
   }  // ← ★ ここで if を閉じる（閉じ②）
 
-
 };  // ← ★ ここで onclick を閉じる（閉じ①）
-
-
-
 
 /* ------------------------------------------------------------
 【作業印_20260217】
@@ -1275,6 +1163,9 @@ async function fetchEvents(year, month) {
 ------------------------------------------------------------ */
 async function fetchAddEvent(date, start, end, category, title, memo, place, participants) {
   const url = "https://script.google.com/macros/s/AKfycbyaAF80D1udsTDyEv231yYa3JvzYKOwJ6IocUzAfjgKsu0LCXU1v0wr0YtsySZrRbXeoQ/exec?dummy=1&action=addEvent";
+
+  const formData = new FormData();   // ← 必須の 1 行
+
   formData.append("action", "addEvent");
   formData.append("date", date);
   formData.append("start", start);
@@ -1292,8 +1183,6 @@ async function fetchAddEvent(date, start, end, category, title, memo, place, par
 
   return await res.json();
 }
-
-
 // ------------------------------------------------------------
 // 【作業印_20260217】
 // 【API追加】deleteEvent を fetch で送信する関数
@@ -1341,27 +1230,19 @@ if (id === "tamal" && pw === "tamal1956") {
  document.getElementById("currentMonth").innerText = `${month}月`;
 document.getElementById("yearText").innerText = `${year}年`;
 
-
   return;
 }
   // ▲▲▲ ログイン成功時の処理ここまで ▲▲▲
-
 
   // ログイン失敗
   alert("ID または パスワードが違います");
 });  // ← ここで本当に終わり
 // ▲▲▲ ログイン処理ここまで ▲▲▲
 
-
-
-
 // ★★★ ログイン画面の ✕ を押したら閉じる ★★★
 document.getElementById("loginClose").addEventListener("click", function () {
   document.getElementById("loginOverlay").style.display = "none";
 });
-
-
-
 
 /*
   ▼▼▼ ページ読み込み時の自動ログイン（2026-02-16 無効化）
@@ -1377,11 +1258,9 @@ window.addEventListener("load", function () {
     // 自動ログイン
     document.getElementById("loginOverlay").style.display = "none";
 
-
     // ★ ③：ログアウトリンクを表示する
     document.getElementById("logoutLink").style.display = "block";
   }
-
 
   // ★ 閲覧者（saved が null）はログイン画面を出さない
   if (saved === null) {
@@ -1392,30 +1271,21 @@ window.addEventListener("load", function () {
   ▲▲▲ 自動ログインここまで ▲▲▲
 */
 
-
-
-
 // ▼▼▼ ログアウト処理 ▼▼▼
 document.getElementById("logoutLink").addEventListener("click", function () {
   // 保存されたログイン状態を削除
   localStorage.removeItem("loggedIn");
 
-
   // ログイン画面を再表示
   document.getElementById("loginOverlay").style.display = "flex";
 
-
   // ログアウトリンクを隠す
   document.getElementById("logoutLink").style.display = "none";
-
 
   // ログアウトしたら編集UIを隠す
   hideEditorUI();
 });
 // ▲▲▲ ログアウト処理ここまで ▲▲▲
-
-
-
 
 // ▼▼▼ カレンダー右下ログインリンクの処理 ▼▼▼
 document.addEventListener("DOMContentLoaded", function () {
@@ -1424,9 +1294,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 // ▲▲▲ カレンダー右下ログインリンクの処理ここまで ▲▲▲
-
-
-
 
 // ▼▼▼ 閲覧者用：編集UIを全部隠す ▼▼▼
 function hideEditorUI() {
@@ -1448,8 +1315,6 @@ function hideEditorUI() {
   document.querySelectorAll(".delete-btn").forEach(btn => btn.style.display = "none");
 }
 // ▲▲▲ 閲覧者用：編集UIを全部隠す ▲▲▲
-
-
 
 
 // ▼▼▼ 編集者用：編集UIを表示する ▼▼▼
@@ -1609,8 +1474,6 @@ document.getElementById("yearText").innerText = `${year}年`;
 </script>
 <div id="loginLink" class="login-link">||ログイン||</div>
 
-
 </body>
 
 </html>
-
