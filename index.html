@@ -1423,8 +1423,6 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
     place: place,
     participants: participants
   };
-}
-
 
   const res = await fetch(url, {
     method: "POST",
@@ -1432,11 +1430,9 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
     body: JSON.stringify(body)
   });
 
-
   const result = await res.json();
   return result;
 }
-
 
     window.addEventListener("load", async () => {
   // 【作業印_20260218_初回描画】祝日取得
@@ -1476,4 +1472,5 @@ document.getElementById("yearText").innerText = `${year}年`;
 </body>
 
 </html>
+
 
