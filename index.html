@@ -651,8 +651,8 @@ let holidays = [];
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 
-// ★ここを追加（実行して holidays を取得）
-holidays = await fetchHolidays(year, month);
+// ★この1行は async 関数の中に移動する必要がある
+// holidays = await fetchHolidays(year, month);
 // ★★★ ここに getColor を入れる ★★★
 function getColor(category) {
   const colors = {
@@ -1098,8 +1098,15 @@ document.getElementById("yearText").innerText = `${year}年`;
 // 【変更理由】google.script.run を外部API(fetch)に置き換え
 // ------------------------------------------------------------
 window.onload = async function() {
+
+  // ★★★ GitHub 版：初期ロード時の祝日取得 ★★★
+  const holidaysData = await fetchHolidays(year, month);
+  holidays.length = 0;
+  holidays.push(...holidaysData);
+
   const events = await fetchEvents(year, month);
   buildCalendar(events);
+
   document.getElementById("currentMonth").innerText = `${month}月`;
   document.getElementById("yearText").innerText = `${year}年`;
 };
@@ -1476,6 +1483,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 </body>
 
 </html>
+
 
 
 
