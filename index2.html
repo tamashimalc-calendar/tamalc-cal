@@ -638,12 +638,10 @@ function logout() {
   sessionStorage.removeItem("loggedIn");
 }
 // 【作業印_20260218_追加】祝日データ取得API
+// ★★★【作業印_20260223_復元】fetchHolidays を元の形に戻す（余計なオプション削除）★★★
 async function fetchHolidays(year, month) {
   const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getHolidays&year=${year}&month=${month}`;
-  const res = await fetch(url, {
-    method: "GET",
-    mode: "cors"
-  });
+  const res = await fetch(url);
   return await res.json();
 }
 
@@ -1095,29 +1093,9 @@ document.getElementById("yearText").innerText = `${year}年`;
   return;
 };  // ← onclick の正しい閉じ位置
 
-// ------------------------------------------------------------
-// 【作業印_20260217】
-// 【変更理由】google.script.run を外部API(fetch)に置き換え
-// ------------------------------------------------------------
-// 【作業印_20260223_修正】初期ロード時に year, month が未定義で fetch される問題を修整
-window.onload = async function() {
 
-  // 【作業印_20260223_追加】初期ロード時の year, month を明示的にセット
-  const today = new Date();
-  year = today.getFullYear();
-  month = today.getMonth() + 1;
 
-  document.getElementById("currentMonth").innerText = `${month}月`;
-  document.getElementById("yearText").innerText = `${year}年`;
 
-  // ★★★ GitHub 版：初期ロード時の祝日取得 ★★★
-  const holidaysData = await fetchHolidays(year, month);
-  holidays.length = 0;
-  holidays.push(...holidaysData);
-
-  const events = await fetchEvents(year, month);
-  buildCalendar(events);
-};
 // ★★★ ここから追加する ★★★
 
 
@@ -1170,12 +1148,10 @@ document.getElementById("yearText").innerText = `${year}年`;
 【作業印_20260217】
 【API追加】getEvents を fetch で取得する関数
 ------------------------------------------------------------ */
+// ★★★【作業印_20260223_復元】fetchEvents を元の形に戻す（余計なオプション削除）★★★
 async function fetchEvents(year, month) {
   const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getEvents&year=${year}&month=${month}`;
-  const res = await fetch(url, {
-    method: "POST",
-    mode: "cors"
-  });
+  const res = await fetch(url);
   return await res.json();
 }
 /* ------------------------------------------------------------
@@ -1267,14 +1243,6 @@ document.getElementById("loginClose").addEventListener("click", function () {
 });
 
 /*
-  ▼▼▼ ページ読み込み時の自動ログイン（2026-02-16 無効化）
-  理由：閲覧者までログイン扱いになってしまうため。
-  この処理があると saved が true でも null でも
-  loginOverlay が常に非表示になり、意図しない自動ログイン状態になる。
- 
-window.addEventListener("load", function () {
-  const saved = localStorage.getItem("loggedIn");
-
 
   if (saved === "true") {
     // 自動ログイン
@@ -1455,14 +1423,6 @@ async function fetchUpdateEvent(row, date, start, end, category, title, memo, pl
   return await res.json();
 }
 
-    window.addEventListener("load", async () => {
-  // 【作業印_20260218_初回描画】祝日取得
-  const holidays = await fetchHolidays();
-
-
-  // 【作業印_20260218_初回描画】イベント取得
-  const events = await fetchEvents(year, month);
-
 
   // カレンダー描画
   buildCalendar(events);
@@ -1487,6 +1447,42 @@ document.getElementById("yearText").innerText = `${year}年`;
 
   currentEditRow = null;
 }
+// ------------------------------------------------------------
+// 【作業印_20260217】
+// 【変更理由】google.script.run を外部API(fetch)に置き換え
+// ------------------------------------------------------------
+// 【作業印_20260223_修正】初期ロード時に year, month が未定義で fetch される問題を修整
+// ★★★ 初期ロード処理の完全統合版（この1本だけで動く）★★★
+window.onload = async function() {
+
+  // ① 初期の year, month をセット
+  // 【作業印_20260223_追加】
+  const today = new Date();
+  year = today.getFullYear();
+  month = today.getMonth() + 1;
+
+  // ② 月/年の表示更新
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
+
+  // ③ 祝日データ取得
+  const holidaysData = await fetchHolidays(year, month);
+  holidays.length = 0;
+  holidays.push(...holidaysData);
+
+  // ④ イベント取得
+  const events = await fetchEvents(year, month);
+
+  // ⑤ カレンダー描画
+  buildCalendar(events);
+
+  // ⑥ ログイン状態で UI 切り替え
+  if (isLoggedIn()) {
+    showEditorUI();
+  } else {
+    hideEditorUI();
+  }
+};
 </script>
 <div id="loginLink" class="login-link">||ログイン||</div>
 
