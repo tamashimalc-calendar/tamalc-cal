@@ -628,25 +628,31 @@ td.saturday {
 
 <script>
 function isLoggedIn() {
-  return localStorage.getItem("loggedIn") === "true";
+  return sessionStorage.getItem("loggedIn") === "true";
+}
+
+function setLoggedIn() {
+  sessionStorage.setItem("loggedIn", "true");
+}
+
+function logout() {
+  sessionStorage.removeItem("loggedIn");
 }
 // 【作業印_20260218_追加】祝日データ取得API
-async function fetchHolidays() {
-  const url = "https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getHolidays";
+async function fetchHolidays(year, month) {
+  const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getHolidays&year=${year}&month=${month}`;
   const res = await fetch(url);
   return await res.json();
 }
 
 // 【作業印_20260218_修正】holidays取得方法をテンプレート構文からAPI取得に変更
-
-
 let holidays = [];
-
 
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 
-
+// ★ここを追加（実行して holidays を取得）
+holidays = await fetchHolidays(year, month);
 // ★★★ ここに getColor を入れる ★★★
 function getColor(category) {
   const colors = {
@@ -1470,6 +1476,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 </body>
 
 </html>
+
 
 
 
