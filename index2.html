@@ -640,7 +640,7 @@ function logout() {
 // 【作業印_20260218_追加】祝日データ取得API
 // ★★★【作業印_20260223_復元】fetchHolidays を元の形に戻す（余計なオプション削除）★★★
 async function fetchHolidays(year, month) {
-  const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getHolidays&year=${year}&month=${month}`;
+  const url = `https://script.google.com/macros/s/AKfycbzMISic0FEJNOUhuDRub8is7RvGrwmdPM3D_lyUi-anAhPJR5vcc3L8bGfP7-7dGrSl/exec?action=getHolidays&year=${year}&month=${month}`;
   const res = await fetch(url);
   return await res.json();
 }
@@ -1150,7 +1150,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 ------------------------------------------------------------ */
 // ★★★【作業印_20260223_復元】fetchEvents を元の形に戻す（余計なオプション削除）★★★
 async function fetchEvents(year, month) {
-  const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getEvents&year=${year}&month=${month}`;
+  const url = `https://script.google.com/macros/s/AKfycbzMISic0FEJNOUhuDRub8is7RvGrwmdPM3D_lyUi-anAhPJR5vcc3L8bGfP7-7dGrSl/exec?action=getEvents&year=${year}&month=${month}`;
   const res = await fetch(url);
   return await res.json();
 }
@@ -1159,7 +1159,7 @@ async function fetchEvents(year, month) {
 【API追加】addEvent を fetch で送信する関数 ← ★ここが今回追加するもの
 ------------------------------------------------------------ */
 async function fetchAddEvent(date, start, end, category, title, memo, place, participants) {
-  const url = "https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec";
+  const url = "https://script.google.com/macros/s/AKfycbzMISic0FEJNOUhuDRub8is7RvGrwmdPM3D_lyUi-anAhPJR5vcc3L8bGfP7-7dGrSl/exec";
 
   const formData = new FormData();
 
@@ -1191,7 +1191,7 @@ async function fetchAddEvent(date, start, end, category, title, memo, place, par
 //               await を含む処理を関数内に戻す形で構造を復元。
 // ------------------------------------------------------------
 async function fetchDeleteEvent(row) {
-  const url = "https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec";
+  const url = "https://script.google.com/macros/s/AKfycbzMISic0FEJNOUhuDRub8is7RvGrwmdPM3D_lyUi-anAhPJR5vcc3L8bGfP7-7dGrSl/exec";
 
   const formData = new FormData();
   formData.append("action", "deleteEvent");
@@ -1399,7 +1399,7 @@ document.getElementById("popupClose").onclick = () => {
 既存コードは一切変更しない
 ------------------------------------------------------------ */
 async function fetchUpdateEvent(row, date, start, end, category, title, memo, place, participants) {
-  const url = "https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec";
+  const url = "https://script.google.com/macros/s/AKfycbzMISic0FEJNOUhuDRub8is7RvGrwmdPM3D_lyUi-anAhPJR5vcc3L8bGfP7-7dGrSl/exec";
 
   const body = {
     action: "updateEvent",
