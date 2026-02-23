@@ -1173,7 +1173,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 async function fetchEvents(year, month) {
   const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getEvents&year=${year}&month=${month}`;
   const res = await fetch(url, {
-    method: "GET",
+    method: "POST",
     mode: "cors"
   });
   return await res.json();
