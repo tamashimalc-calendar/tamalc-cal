@@ -641,7 +641,10 @@ function logout() {
 // 【作業印_20260218_追加】祝日データ取得API
 async function fetchHolidays(year, month) {
   const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getHolidays&year=${year}&month=${month}`;
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    method: "GET",
+    mode: "cors"
+  });
   return await res.json();
 }
 
@@ -1097,7 +1100,16 @@ document.getElementById("yearText").innerText = `${year}年`;
 // 【作業印_20260217】
 // 【変更理由】google.script.run を外部API(fetch)に置き換え
 // ------------------------------------------------------------
+// 【作業印_20260223_修正】初期ロード時に year, month が未定義で fetch される問題を修整
 window.onload = async function() {
+
+  // 【作業印_20260223_追加】初期ロード時の year, month を明示的にセット
+  const today = new Date();
+  year = today.getFullYear();
+  month = today.getMonth() + 1;
+
+  document.getElementById("currentMonth").innerText = `${month}月`;
+  document.getElementById("yearText").innerText = `${year}年`;
 
   // ★★★ GitHub 版：初期ロード時の祝日取得 ★★★
   const holidaysData = await fetchHolidays(year, month);
@@ -1106,11 +1118,7 @@ window.onload = async function() {
 
   const events = await fetchEvents(year, month);
   buildCalendar(events);
-
-  document.getElementById("currentMonth").innerText = `${month}月`;
-  document.getElementById("yearText").innerText = `${year}年`;
 };
-
 // ★★★ ここから追加する ★★★
 
 
@@ -1165,7 +1173,10 @@ document.getElementById("yearText").innerText = `${year}年`;
 ------------------------------------------------------------ */
 async function fetchEvents(year, month) {
   const url = `https://script.google.com/macros/s/AKfycbw1twAhGFrf1svg2RxG5C3XGAtUzmZZLWqq-bNZIkEwsLbPkVxObPo5djBTf4rOG-UX/exec?action=getEvents&year=${year}&month=${month}`;
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    method: "GET",
+    mode: "cors"
+  });
   return await res.json();
 }
 /* ------------------------------------------------------------
@@ -1483,6 +1494,7 @@ document.getElementById("yearText").innerText = `${year}年`;
 </body>
 
 </html>
+
 
 
 
